@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미식투어 — BIBLE TOUR 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background: #1a0f00;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,152,0,0.2);
+    flex-shrink: 0;
+  }
+  .nav-home { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; }
+  .nav-home:hover { color: #fff; }
+  .nav-title { font-size: 1.1rem; font-weight: 700; color: #FF9800; letter-spacing: 0.1em; }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; }
+  .progress-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background 0.3s; cursor: pointer; }
+  .dot.active { background: #FF9800; }
+  .dot.done { background: rgba(255,152,0,0.4); }
+  .slide-counter { font-size: 0.85rem; color: rgba(255,255,255,0.5); min-width: 60px; text-align: right; }
+  .slide-area { flex: 1; position: relative; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateX(80px);
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+  }
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+  .slide.prev { opacity: 0; transform: translateX(-80px); }
+
+  /* COVER */
+  .s-cover {
+    flex-direction: column; text-align: center;
+    background: radial-gradient(ellipse at center, #4a2000 0%, #1a0900 70%);
+    padding: 40px;
+  }
+  .cover-badge {
+    background: #FF9800; color: #000; font-size: 1rem; font-weight: 900;
+    padding: 8px 28px; border-radius: 30px; letter-spacing: 0.15em;
+    margin-bottom: 28px; display: inline-block;
+  }
+  .cover-main {
+    font-size: 5.5rem; font-weight: 900; color: #FF9800;
+    text-shadow: 0 6px 30px rgba(255,152,0,0.5);
+    line-height: 1; margin-bottom: 16px;
+  }
+  .cover-sub { font-size: 2rem; color: rgba(255,255,255,0.8); margin-bottom: 32px; }
+  .cover-verse {
+    background: rgba(255,152,0,0.15); border: 2px solid rgba(255,152,0,0.4);
+    border-radius: 16px; padding: 20px 40px;
+    font-size: 1.4rem; color: #FFD180; line-height: 1.7;
+    max-width: 700px;
+  }
+  .cover-keys {
+    margin-top: 32px; color: rgba(255,255,255,0.4); font-size: 1rem;
+  }
+
+  /* INTRO */
+  .s-intro {
+    flex-direction: column; align-items: flex-start;
+    padding: 50px 80px;
+    background: linear-gradient(160deg, #2a1300 0%, #150900 100%);
+  }
+  .act-number {
+    font-size: 0.95rem; font-weight: 700; color: #FF9800; letter-spacing: 0.2em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .act-title {
+    font-size: 3.4rem; font-weight: 900; color: #fff;
+    line-height: 1.1; margin-bottom: 24px;
+  }
+  .act-title span { color: #FF9800; }
+  .act-verse {
+    background: rgba(255,152,0,0.12); border-left: 5px solid #FF9800;
+    border-radius: 0 12px 12px 0; padding: 18px 28px;
+    font-size: 1.3rem; color: #FFD180; line-height: 1.8;
+    margin-bottom: 28px; max-width: 780px;
+  }
+  .act-message {
+    font-size: 1.4rem; color: rgba(255,255,255,0.85); line-height: 1.8;
+    max-width: 780px;
+  }
+  .act-message strong { color: #FF9800; }
+
+  /* MATERIALS */
+  .s-mat {
+    flex-direction: column; align-items: flex-start;
+    padding: 40px 80px;
+    background: #150900;
+  }
+  .section-label {
+    font-size: 1rem; font-weight: 700; color: #FF9800;
+    letter-spacing: 0.2em; margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 2.4rem; font-weight: 900; color: #fff;
+    margin-bottom: 36px;
+  }
+  .mat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px; width: 100%;
+  }
+  .mat-grid.col3 { grid-template-columns: repeat(3, 1fr); }
+  .mat-grid.col5 { grid-template-columns: repeat(5, 1fr); }
+  .mat-item {
+    background: rgba(255,152,0,0.1);
+    border: 2px solid rgba(255,152,0,0.3);
+    border-radius: 18px; padding: 24px 16px;
+    text-align: center;
+  }
+  .mat-item .mat-icon { font-size: 3rem; margin-bottom: 12px; }
+  .mat-item .mat-name { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .mat-item .mat-note { font-size: 0.9rem; color: rgba(255,255,255,0.5); }
+  .teacher-tip {
+    margin-top: 28px;
+    background: rgba(255,200,0,0.1); border: 2px solid rgba(255,200,0,0.3);
+    border-radius: 12px; padding: 16px 24px;
+    font-size: 1.1rem; color: #FFD180; width: 100%;
+  }
+  .teacher-tip::before { content: "👩‍🏫 선생님 TIP  "; font-weight: 700; }
+
+  /* INFOGRAPHIC */
+  .s-infographic {
+    flex-direction: column; align-items: flex-start;
+    padding: 36px 80px;
+    background: #120800;
+  }
+  .info-flow {
+    display: flex; align-items: stretch; gap: 10px;
+    width: 100%; margin-top: 12px;
+  }
+  .info-step {
+    flex: 1; background: rgba(255,152,0,0.1);
+    border: 2px solid rgba(255,152,0,0.35);
+    border-radius: 16px; padding: 22px 16px;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .info-step .step-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #FF9800; color: #000; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; margin-bottom: 12px;
+  }
+  .info-step .step-icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .info-step .step-label { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .info-step .step-note { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.4; }
+  .info-arrow {
+    display: flex; align-items: center; color: #FF9800;
+    font-size: 1.8rem; flex-shrink: 0;
+  }
+  .svg-banner {
+    width: 100%; margin-top: 20px;
+    border-radius: 14px; overflow: hidden;
+  }
+
+  /* FULL IMAGE */
+  .s-imgfull {
+    background: #0e0700;
+    padding: 24px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .imgfull-label {
+    font-size: 1rem; font-weight: 700; color: #FF9800;
+    letter-spacing: 0.15em;
+  }
+  .imgfull-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    width: 100%;
+  }
+  .imgfull-wrap img {
+    max-width: 90%; max-height: 72vh;
+    border-radius: 20px;
+    box-shadow: 0 12px 60px rgba(0,0,0,0.6);
+    object-fit: contain;
+  }
+
+  /* APPLY */
+  .s-apply {
+    flex-direction: column; align-items: flex-start;
+    padding: 48px 80px;
+    background: linear-gradient(160deg, #1e0e00 0%, #0e0700 100%);
+  }
+  .apply-qs { width: 100%; margin-top: 16px; display: flex; flex-direction: column; gap: 18px; }
+  .apply-q {
+    background: rgba(255,152,0,0.1); border-left: 5px solid #FF9800;
+    border-radius: 0 14px 14px 0; padding: 20px 28px;
+    font-size: 1.3rem; color: #fff; line-height: 1.6;
+  }
+  .apply-q .q-label { font-size: 0.9rem; color: #FF9800; font-weight: 700; margin-bottom: 8px; }
+  .prayer-box {
+    width: 100%; margin-top: 28px;
+    background: rgba(255,152,0,0.08); border: 2px solid rgba(255,152,0,0.3);
+    border-radius: 16px; padding: 24px 32px;
+    font-size: 1.25rem; color: #FFD180; line-height: 2;
+    text-align: center;
+  }
+  .prayer-box .prayer-title { font-size: 1rem; color: #FF9800; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 12px; }
+
+  /* FINALE */
+  .s-finale {
+    flex-direction: column; text-align: center; align-items: center;
+    background: radial-gradient(ellipse at center, #3d1f00 0%, #0e0700 70%);
+    padding: 40px;
+  }
+  .finale-icon { font-size: 5rem; margin-bottom: 24px; }
+  .finale-title { font-size: 3rem; font-weight: 900; color: #FF9800; margin-bottom: 16px; }
+  .finale-verse {
+    font-size: 1.5rem; color: rgba(255,255,255,0.8); line-height: 1.8;
+    margin-bottom: 32px; max-width: 700px;
+  }
+  .finale-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%;
+    max-width: 800px;
+  }
+  .finale-item {
+    background: rgba(255,152,0,0.12); border: 2px solid rgba(255,152,0,0.3);
+    border-radius: 14px; padding: 20px 16px; text-align: center;
+  }
+  .finale-item .fi-icon { font-size: 2.2rem; margin-bottom: 10px; }
+  .finale-item .fi-text { font-size: 1.05rem; color: #fff; font-weight: 600; }
+
+  /* NAV BUTTONS */
+  .nav-btn {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(255,152,0,0.2); border: 2px solid rgba(255,152,0,0.4);
+    color: #FF9800; border-radius: 50%; width: 52px; height: 52px;
+    font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; z-index: 10;
+  }
+  .nav-btn:hover { background: rgba(255,152,0,0.4); }
+  .nav-btn.left { left: 16px; }
+  .nav-btn.right { right: 16px; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+  .fullscreen-btn {
+    position: fixed; bottom: 20px; right: 20px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6); border-radius: 8px;
+    padding: 8px 16px; cursor: pointer; font-size: 0.85rem;
+    transition: all 0.2s; z-index: 10;
+  }
+  .fullscreen-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  .controls { display:flex; align-items:center; justify-content:center; gap:24px; padding:14px; flex-shrink:0; background:rgba(0,0,0,.4); }
+  .btn { padding:13px 40px; border:none; border-radius:30px; font-size:1.05rem; font-weight:700; font-family:inherit; cursor:pointer; transition:all .2s; }
+  .btn-prev { background:rgba(255,255,255,.1); color:#fff; }
+  .btn-prev:hover { background:rgba(255,255,255,.2); }
+  .btn-next { background:#FF9800; color:#1a0f00; }
+  .btn-next:hover { background:#ffad33; transform:scale(1.05); }
+  .btn:disabled { opacity:.3; cursor:not-allowed; transform:none !important; }
+  .key-hint { font-size:.85rem; color:rgba(255,255,255,.3); }
+  .nav-btn { display:none; }
+  .step-cards { display:flex; gap:14px; width:100%; align-items:stretch; flex:1; }
+  .step-card {
+    flex:1; text-align:center; padding:20px 10px; border-radius:22px;
+    border:2px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+    opacity:.28; transform:scale(.88);
+  }
+  .step-card.done { opacity:.52; transform:scale(.94); border-color:rgba(255,152,0,.35); background:rgba(255,152,0,.09); }
+  .step-card.active { opacity:1; transform:scale(1.06); border-color:#FF9800; background:rgba(255,152,0,.22); box-shadow:0 0 34px rgba(255,152,0,.28); }
+  .sc-num { width:34px;height:34px; border-radius:50%; background:rgba(255,255,255,.12); display:flex;align-items:center;justify-content:center; font-size:.95rem; font-weight:900; flex-shrink:0; }
+  .step-card.active .sc-num { background:#FF9800; color:#000; }
+  .step-card.done .sc-num { background:rgba(255,152,0,.4); }
+  .sc-icon { display:flex; align-items:center; justify-content:center; width:100%; height:52px; transition:transform .35s; }
+  .sc-icon svg { width:90%; max-height:52px; }
+  .step-card.active .sc-icon { transform:scale(1.12); height:58px; }
+  .sc-label { font-size:.95rem; font-weight:700; color:rgba(255,255,255,.45); transition:all .35s; }
+  .step-card.active .sc-label { color:#fff; font-size:1.1rem; }
+  .sc-note { font-size:.78rem; color:rgba(255,255,255,.25); line-height:1.4; transition:color .35s; }
+  .step-card.active .sc-note { color:rgba(255,255,255,.72); }
+  .step-card.done .sc-label { color:rgba(255,255,255,.6); }
+  .step-card.done .sc-note { color:rgba(255,255,255,.4); }
+  .step-hint { font-size:.82rem; color:rgba(255,255,255,.28); text-align:center; margin-top:8px; letter-spacing:.05em; }
+  .s-infographic.has-photo .step-cards { flex:0 0 250px; }
+  .activity-photo { width:min(570px,100%); height:clamp(190px,34vh,380px); margin:14px auto 0; overflow:hidden; border:1px solid rgba(255,255,255,.18); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.28); background:rgba(0,0,0,.24); cursor:zoom-in; }
+  .activity-photo img { width:100%; height:100%; display:block; object-fit:contain; object-position:center; }
+  .photo-lightbox { position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:48px; background:rgba(0,0,0,.88); cursor:zoom-out; }
+  .photo-lightbox.open { display:flex; }
+  .photo-lightbox img { max-width:92vw; max-height:86vh; object-fit:contain; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.65); }
+  .photo-lightbox button { position:absolute; top:20px; right:28px; border:1px solid rgba(255,255,255,.45); border-radius:50%; width:42px; height:42px; color:#fff; background:rgba(0,0,0,.32); font-size:1.5rem; cursor:pointer; }
+.s-infographic.has-step-gallery { display:grid; grid-template-columns:minmax(250px,300px) minmax(0,1fr); grid-template-rows:auto auto minmax(0,1fr) auto; column-gap:28px; row-gap:10px; align-items:stretch; }
+  .has-step-gallery .section-label, .has-step-gallery .section-title { grid-column:1/-1; }
+  .has-step-gallery .section-label { margin-bottom:-12px; }
+  .has-step-gallery .step-cards { grid-column:1; grid-row:3; flex:1; flex-direction:column; gap:10px; min-height:0; }
+  .has-step-gallery .step-card { min-height:0; padding:10px 14px; display:grid; grid-template-columns:34px 46px minmax(0,1fr); grid-template-rows:1fr 1fr; align-items:center; column-gap:8px; text-align:left; transform:none; cursor:pointer; }
+  .has-step-gallery .step-card.active { transform:none; }
+  .has-step-gallery .sc-num { grid-row:1/3; }
+  .has-step-gallery .sc-icon { grid-row:1/3; width:46px; height:46px; }
+  .has-step-gallery .sc-icon svg { width:100%; max-height:46px; }
+  .has-step-gallery .sc-label { align-self:end; font-size:.92rem; }
+  .has-step-gallery .step-card.active .sc-label { font-size:1rem; }
+  .has-step-gallery .sc-note { align-self:start; }
+  .has-step-gallery .step-hint { grid-column:1/-1; grid-row:4; margin-top:0; }
+  .step-detail { grid-column:2; grid-row:3; min-width:0; min-height:0; display:flex; flex-direction:column; gap:12px; padding:18px; overflow:hidden; border:1px solid rgba(255,255,255,.14); border-radius:22px; background:rgba(255,255,255,.04); box-shadow:0 10px 34px rgba(0,0,0,.18); }
+  .step-detail-head { display:flex; align-items:baseline; gap:10px; }
+  .step-detail-num { color:#FF9800; font-weight:900; font-size:1rem; }
+  .step-detail-title { color:#fff; font-size:1.55rem; font-weight:900; }
+  .step-detail-photo { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:15px; background:rgba(0,0,0,.25); }
+  .step-detail-photo img { width:100%; height:100%; object-fit:contain; cursor:zoom-in; }
+  .step-detail-note { color:rgba(255,255,255,.68); font-size:1.05rem; line-height:1.5; text-align:center; }
+  .act-jumps { display: flex; gap: 8px; }
+  .act-jump { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.65); border-radius: 20px; padding: 5px 16px; cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: all 0.2s; white-space: nowrap; }
+  .act-jump:hover { background: rgba(255,152,0,0.25); border-color: #FF9800; color: #fff; }
+  .act-jump.on { background: rgba(255,152,0,0.25); border-color: #FF9800; color: #fff; font-weight: 700; }
+</style>
+<link rel="stylesheet" href="theme-night-garden.css">
+</head>
+<body>
+<div class="journey-mascot" aria-hidden="true"><span>⌣</span></div>
+
+<div class="top-nav">
+  <div class="brand-lockup"><img class="tour-brand-logo" src="img/brand/bible-tour-logo.png" alt="BIBLE TOUR His Story"></div>
+  <a class="nav-home" href="index.html">← 홈</a>
+  <div class="nav-title">🍽️ 미식투어</div>
+  <div class="act-jumps">
+    <button class="act-jump on" onclick="goTo(1)" id="aj1">① 포도주</button>
+    <button class="act-jump" onclick="goTo(6)" id="aj2">② 라이스케이크</button>
+    <button class="act-jump" onclick="goTo(11)" id="aj3">③ 빈무덤</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-dots" id="dots"></div>
+    <div class="slide-counter" id="counter"></div>
+  </div>
+</div>
+
+<div class="slide-area" id="slideArea"></div>
+
+<div class="controls">
+  <button class="btn btn-prev" id="btnPrevBottom" onclick="go(-1)">← 이전</button>
+  <span class="key-hint">← → 키보드 이동</span>
+  <button class="btn btn-next" id="btnNextBottom" onclick="go(1)">다음 →</button>
+</div>
+
+<button class="nav-btn left" id="btnPrev" onclick="go(-1)">‹</button>
+<button class="nav-btn right" id="btnNext" onclick="go(1)">›</button>
+<button class="fullscreen-btn" onclick="toggleFS()">⛶ 전체화면</button>
+
+<script>
+const slides = [
+  // 0 — COVER
+  { type:'cover', html:`
+    <div class="s-cover slide active" id="s0">
+      <img class="cover-tour-logo" src="img/brand/bible-tour-logo.png" alt="BIBLE TOUR His Story">
+      <div class="cover-badge">🍽️ FOOD TOUR</div>
+      <div class="cover-main">미식투어</div>
+      <div class="cover-sub">성경 이야기와 함께하는 먹거리 만들기</div>
+      <div class="cover-verse">
+        "예수님의 기적을 직접 맛보아요!<br>
+        오늘 우리가 먹는 음식에도 하나님의 사랑이 담겨 있어요."
+      </div>
+      <div class="cover-keys">← → 키로 넘기기 &nbsp;|&nbsp; 먹거리 3가지</div>
+    </div>
+  `},
+
+  // 1 — Activity 1 INTRO: 물이 변하여 포도주
+  { type:'intro', html:`
+    <div class="s-intro slide" id="s1">
+      <div class="act-number">먹거리 활동 1 / 3</div>
+      <div class="act-title">물이 변하여<br><span>포도주 됐어요!</span></div>
+      <div class="act-verse">
+        "연회장은 물로 된 포도주를 맛보고도 어디서 났는지 알지 못하되
+        물 떠온 하인들은 알더라 연회장이 신랑을 불러 말하되…"<br>
+        <strong>— 요한복음 2:9-11</strong>
+      </div>
+      <div class="act-message">
+        예수님은 물을 <strong>포도주</strong>로 바꾸는 첫 번째 기적을 베푸셨어요.<br>
+        오늘은 우리도 손으로 직접 기적을 체험해요!
+      </div>
+    </div>
+  `},
+
+  // 2 — Activity 1 MATERIALS
+  { type:'mat', html:`
+    <div class="s-mat slide" id="s2">
+      <div class="section-label">먹거리 1 — 준비물</div>
+      <div class="section-title">필요한 재료를 확인해요</div>
+      <div class="mat-grid col4">
+        <div class="mat-item">
+          <div class="mat-icon">💧</div>
+          <div class="mat-name">탄산수</div>
+          <div class="mat-note">1인 1컵 분량</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🍇</div>
+          <div class="mat-name">포도주스</div>
+          <div class="mat-note">농축 원액 권장</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🥛</div>
+          <div class="mat-name">투명 컵</div>
+          <div class="mat-note">색 변화를 볼 수 있게</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🧊</div>
+          <div class="mat-name">얼음</div>
+          <div class="mat-note">1~2조각씩</div>
+        </div>
+      </div>
+      <div class="teacher-tip">투명 컵을 사용해야 물이 포도색으로 변하는 장면이 극적으로 보여요!</div>
+    </div>
+  `},
+
+  // 3 — Activity 1 INFOGRAPHIC
+  { type:'infographic', html:`
+    <div class="s-infographic slide has-step-gallery" id="s3" data-gallery="food-grape-drink">
+      <div class="section-label">먹거리 1 — 만드는 순서</div>
+      <div class="section-title">순서대로 따라해요</div>
+      <div class="step-cards">
+        <div class="step-card active">
+          <div class="sc-num">1</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="24" y="15" width="32" height="36" rx="2" fill="rgba(200,230,255,.08)" stroke="rgba(200,230,255,.55)" stroke-width="1.5"/><ellipse cx="40" cy="15" rx="16" ry="5" fill="rgba(200,230,255,.15)" stroke="rgba(200,230,255,.4)" stroke-width="1"/><rect x="26" y="24" width="16" height="14" rx="3" fill="rgba(200,240,255,.3)" stroke="rgba(200,240,255,.5)" stroke-width="1.5"/><rect x="28" y="26" width="6" height="5" rx="1" fill="rgba(255,255,255,.25)"/><rect x="44" y="20" width="10" height="10" rx="2" fill="rgba(200,240,255,.28)" stroke="rgba(200,240,255,.45)" stroke-width="1"/><text x="40" y="53" fill="rgba(255,255,255,.45)" font-size="6.5" text-anchor="middle">얼음 1~2조각</text></svg></div>
+          <div class="sc-label">컵에 얼음</div>
+          <div class="sc-note">투명 컵에<br>얼음 1~2조각</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">2</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="24" y="15" width="32" height="36" rx="2" fill="rgba(200,230,255,.08)" stroke="rgba(200,230,255,.55)" stroke-width="1.5"/><ellipse cx="40" cy="15" rx="16" ry="5" fill="rgba(200,230,255,.15)" stroke="rgba(200,230,255,.4)" stroke-width="1"/><rect x="25" y="28" width="30" height="22" rx="0" fill="rgba(200,220,255,.18)"/><circle cx="30" cy="35" r="2.5" fill="rgba(255,255,255,.35)"/><circle cx="36" cy="28" r="2" fill="rgba(255,255,255,.3)"/><circle cx="45" cy="33" r="3" fill="rgba(255,255,255,.3)"/><circle cx="50" cy="27" r="2" fill="rgba(255,255,255,.3)"/><polygon points="34,3 40,0 46,3 44,12 36,12" fill="rgba(200,220,255,.5)" stroke="rgba(200,220,255,.7)" stroke-width="1"/><line x1="40" y1="12" x2="40" y2="15" stroke="rgba(200,220,255,.6)" stroke-width="1.5"/><line x1="22" y1="25" x2="18" y2="25" stroke="rgba(255,152,0,.7)" stroke-width="1.5" stroke-dasharray="2,1"/><text x="14" y="29" fill="rgba(255,152,0,.8)" font-size="6">2/3</text></svg></div>
+          <div class="sc-label">탄산수 붓기</div>
+          <div class="sc-note">컵의 2/3<br>채우기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">3</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="20" width="24" height="32" rx="2" fill="rgba(200,230,255,.08)" stroke="rgba(200,230,255,.5)" stroke-width="1.5"/><ellipse cx="42" cy="20" rx="12" ry="4" fill="rgba(200,230,255,.15)" stroke="rgba(200,230,255,.35)" stroke-width="1"/><rect x="31" y="34" width="22" height="17" rx="0" fill="rgba(150,0,200,.45)"/><rect x="31" y="28" width="22" height="6" rx="0" fill="rgba(180,100,230,.35)"/><circle cx="14" cy="12" rx="10" r="10" fill="rgba(150,0,180,.4)" stroke="rgba(180,80,220,.7)" stroke-width="1.5"/><line x1="14" y1="12" x2="14" y2="20" stroke="rgba(150,0,180,.5)" stroke-width="1"/><line x1="14" y1="20" x2="29" y2="26" stroke="rgba(150,0,180,.5)" stroke-width="1.5" stroke-dasharray="2,2"/><polygon points="27,23 31,28 33,22" fill="rgba(150,0,180,.6)"/></svg></div>
+          <div class="sc-label">포도주스 추가</div>
+          <div class="sc-note">천천히<br>따르기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">4</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="14" width="24" height="32" rx="2" fill="rgba(150,0,200,.25)" stroke="rgba(180,80,220,.6)" stroke-width="1.5"/><ellipse cx="40" cy="14" rx="12" ry="4" fill="rgba(180,80,220,.2)" stroke="rgba(180,80,220,.4)" stroke-width="1"/><rect x="29" y="28" width="22" height="17" rx="0" fill="rgba(100,0,150,.5)"/><circle cx="60" cy="22" r="12" fill="rgba(200,230,255,.06)" stroke="rgba(200,230,255,.45)" stroke-width="1.5"/><circle cx="60" cy="22" r="8" fill="rgba(200,230,255,.04)" stroke="rgba(200,230,255,.3)" stroke-width="1"/><line x1="56" y1="18" x2="64" y2="26" stroke="rgba(200,230,255,.5)" stroke-width="1.5"/><line x1="64" y1="18" x2="56" y2="26" stroke="rgba(200,230,255,.5)" stroke-width="1.5"/><text x="40" y="52" fill="rgba(255,152,0,.8)" font-size="7" text-anchor="middle">색이 변해요!</text></svg></div>
+          <div class="sc-label">색 변화 관찰</div>
+          <div class="sc-note">물이 포도색으로<br>변해요!</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">5</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="12" width="24" height="34" rx="2" fill="rgba(100,0,150,.4)" stroke="rgba(180,80,220,.6)" stroke-width="1.5"/><ellipse cx="40" cy="12" rx="12" ry="4" fill="rgba(180,80,220,.25)" stroke="rgba(180,80,220,.45)" stroke-width="1"/><circle cx="52" cy="20" r="6" fill="rgba(255,152,0,.8)" stroke="rgba(255,152,0,.9)" stroke-width="1.5"/><path d="M49,21 Q52,25 55,21" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="50" cy="18" r="1.5" fill="white"/><circle cx="54" cy="18" r="1.5" fill="white"/><text x="40" y="52" fill="rgba(255,152,0,.9)" font-size="8" text-anchor="middle" font-weight="bold">맛보기!</text></svg></div>
+          <div class="sc-label">맛보기!</div>
+          <div class="sc-note">예수님 기적을<br>직접 느껴봐요</div>
+        </div>
+      </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 투명 컵 사용해야 색 변화가 잘 보여요!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+    </div>
+  `},
+
+  // 4 — Activity 1 IMAGE
+  { type:'imgfull', html:`
+    <div class="s-imgfull slide" id="s4">
+      <div class="imgfull-label">📸 먹거리 1 — 완성 모습</div>
+      <div class="imgfull-wrap">
+        <svg viewBox="0 0 680 440" xmlns="http://www.w3.org/2000/svg" style="max-width:88%;max-height:70vh;">
+          <defs>
+            <radialGradient id="tableGrad" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#2a1400" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#0e0700"/>
+            </radialGradient>
+            <linearGradient id="juiceGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d4a0e0" stop-opacity="0.6"/>
+              <stop offset="40%" stop-color="#8b3a9e" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#5c1a7a" stop-opacity="0.95"/>
+            </linearGradient>
+            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(200,230,255,0.25)"/>
+              <stop offset="100%" stop-color="rgba(180,220,255,0.15)"/>
+            </linearGradient>
+            <radialGradient id="glassShine" cx="25%" cy="20%" r="50%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Background -->
+          <rect width="680" height="440" fill="url(#tableGrad)"/>
+
+          <!-- Table surface line -->
+          <rect x="0" y="340" width="680" height="100" rx="0" fill="rgba(80,40,10,0.5)"/>
+          <line x1="0" y1="340" x2="680" y2="340" stroke="rgba(180,120,50,0.4)" stroke-width="2"/>
+
+          <!-- LEFT GLASS (탄산수 — clear) -->
+          <!-- Glass body -->
+          <rect x="120" y="160" width="130" height="180" rx="0" fill="url(#waterGrad)"/>
+          <!-- Tapered bottom -->
+          <polygon points="120,340 250,340 240,355 130,355" fill="rgba(180,220,255,0.1)"/>
+          <!-- Glass rim (top) -->
+          <ellipse cx="185" cy="160" rx="65" ry="10" fill="rgba(200,230,255,0.18)" stroke="rgba(200,230,255,0.4)" stroke-width="2"/>
+          <!-- Glass walls -->
+          <rect x="120" y="160" width="5" height="180" fill="rgba(200,230,255,0.2)"/>
+          <rect x="245" y="160" width="5" height="180" fill="rgba(200,230,255,0.15)"/>
+          <!-- Shine on left wall -->
+          <rect x="128" y="170" width="12" height="150" rx="6" fill="rgba(255,255,255,0.12)"/>
+          <!-- Bubbles in water -->
+          <circle cx="155" cy="300" r="4" fill="rgba(255,255,255,0.35)"/>
+          <circle cx="175" cy="270" r="3" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="200" cy="290" r="5" fill="rgba(255,255,255,0.28)"/>
+          <circle cx="220" cy="250" r="3" fill="rgba(255,255,255,0.32)"/>
+          <circle cx="165" cy="240" r="4" fill="rgba(255,255,255,0.28)"/>
+          <circle cx="235" cy="310" r="3" fill="rgba(255,255,255,0.3)"/>
+          <!-- Ice cubes -->
+          <rect x="140" y="180" width="40" height="40" rx="5" fill="rgba(200,240,255,0.35)" stroke="rgba(200,240,255,0.5)" stroke-width="1.5"/>
+          <rect x="145" y="183" width="15" height="10" rx="2" fill="rgba(255,255,255,0.25)"/>
+          <rect x="190" y="175" width="38" height="38" rx="5" fill="rgba(200,240,255,0.32)" stroke="rgba(200,240,255,0.5)" stroke-width="1.5"/>
+          <rect x="194" y="178" width="12" height="8" rx="2" fill="rgba(255,255,255,0.22)"/>
+          <!-- Glass bottom ellipse -->
+          <ellipse cx="185" cy="340" rx="65" ry="10" fill="rgba(200,230,255,0.12)" stroke="rgba(200,230,255,0.3)" stroke-width="1.5"/>
+          <text x="185" y="385" fill="rgba(200,220,255,0.75)" font-size="16" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">탄산수</text>
+
+          <!-- ARROW in middle -->
+          <text x="305" y="240" fill="#FF9800" font-size="56" text-anchor="middle" dominant-baseline="middle">→</text>
+          <text x="305" y="285" fill="#FF9800" font-size="14" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">포도주스 추가!</text>
+
+          <!-- RIGHT GLASS (포도주 — purple) -->
+          <!-- Glass body filled with purple juice -->
+          <rect x="430" y="160" width="130" height="180" rx="0" fill="url(#juiceGrad)"/>
+          <!-- Mixing zone at top (lighter, still mixing) -->
+          <rect x="430" y="160" width="130" height="45" rx="0" fill="rgba(180,100,220,0.5)"/>
+          <!-- Fizz bubbles at liquid surface -->
+          <circle cx="450" cy="168" r="5" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="468" cy="162" r="4" fill="rgba(255,255,255,0.35)"/>
+          <circle cx="490" cy="170" r="6" fill="rgba(255,255,255,0.38)"/>
+          <circle cx="515" cy="163" r="4" fill="rgba(255,255,255,0.35)"/>
+          <circle cx="538" cy="168" r="5" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="555" cy="162" r="3" fill="rgba(255,255,255,0.3)"/>
+          <!-- Rising bubbles in juice -->
+          <circle cx="458" cy="260" r="4" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="485" cy="230" r="3" fill="rgba(255,255,255,0.18)"/>
+          <circle cx="510" cy="255" r="5" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="535" cy="235" r="3" fill="rgba(255,255,255,0.18)"/>
+          <circle cx="548" cy="285" r="4" fill="rgba(255,255,255,0.18)"/>
+          <!-- Glass walls -->
+          <rect x="430" y="160" width="5" height="180" fill="rgba(200,180,220,0.2)"/>
+          <rect x="555" y="160" width="5" height="180" fill="rgba(200,180,220,0.18)"/>
+          <!-- Shine -->
+          <rect x="438" y="170" width="12" height="150" rx="6" fill="rgba(255,255,255,0.1)"/>
+          <!-- Glass rim -->
+          <ellipse cx="495" cy="160" rx="65" ry="10" fill="rgba(200,160,230,0.2)" stroke="rgba(200,180,230,0.5)" stroke-width="2"/>
+          <!-- Ice cube showing through purple -->
+          <rect x="448" y="190" width="38" height="38" rx="5" fill="rgba(220,200,240,0.25)" stroke="rgba(220,200,240,0.4)" stroke-width="1.5"/>
+          <!-- Glass bottom ellipse -->
+          <ellipse cx="495" cy="340" rx="65" ry="10" fill="rgba(120,40,160,0.3)" stroke="rgba(150,80,180,0.4)" stroke-width="1.5"/>
+          <!-- Tapered bottom -->
+          <polygon points="430,340 560,340 550,355 440,355" fill="rgba(120,40,160,0.25)"/>
+          <text x="495" y="385" fill="#cc80ff" font-size="16" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">포도주!</text>
+
+          <!-- Stars sparkle effect on right glass -->
+          <text x="580" y="190" fill="rgba(255,200,255,0.7)" font-size="18">✨</text>
+          <text x="598" y="220" fill="rgba(255,200,255,0.55)" font-size="14">✦</text>
+          <text x="590" y="250" fill="rgba(255,200,255,0.65)" font-size="16">✨</text>
+
+          <!-- Title -->
+          <text x="340" y="48" fill="rgba(255,255,255,0.95)" font-size="24" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">물이 변하여 포도주 됐어요!</text>
+          <text x="340" y="80" fill="rgba(255,152,0,0.85)" font-size="16" font-family="Malgun Gothic,sans-serif" text-anchor="middle">탄산수 + 포도주스 → 색이 변해요! (요한복음 2장)</text>
+
+          <!-- Sparkle at glass top -->
+          <text x="185" y="140" fill="rgba(200,230,255,0.6)" font-size="18" text-anchor="middle">✦</text>
+          <text x="495" y="130" fill="rgba(200,160,255,0.7)" font-size="22" text-anchor="middle">🎉</text>
+        </svg>
+      </div>
+    </div>
+  `},
+
+  // 5 — Activity 1 APPLY
+  { type:'apply', html:`
+    <div class="s-apply slide" id="s5">
+      <div class="section-label">먹거리 1 — 나눔과 기도</div>
+      <div class="section-title">함께 이야기해요</div>
+      <div class="apply-qs">
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 1</div>
+          물이 포도주로 변하는 것을 보고 어떤 느낌이 들었나요?
+        </div>
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 2</div>
+          예수님이 이 기적을 행하신 이유는 무엇일까요?
+        </div>
+      </div>
+      <div class="prayer-box">
+        <div class="prayer-title">🙏 기도</div>
+        예수님, 오늘 우리에게 첫 번째 기적을 알려주셔서 감사해요.<br>
+        예수님이 행하시는 기적을 믿는 우리가 되게 해 주세요. 아멘.
+      </div>
+    </div>
+  `},
+
+  // 6 — Activity 2 INTRO: 얼굴 라이스 케이크
+  { type:'intro', html:`
+    <div class="s-intro slide" id="s6">
+      <div class="act-number">먹거리 활동 2 / 3</div>
+      <div class="act-title">얼굴<br><span>라이스 케이크</span></div>
+      <div class="act-verse">
+        "예수께서 그에게 이르시되 보라 네 믿음이 너를 구원하였느니라 하시매
+        곧 보게 되어 하나님께 영광을 돌리며 예수를 따르니…"<br>
+        <strong>— 누가복음 18:42-43</strong>
+      </div>
+      <div class="act-message">
+        눈이 멀었던 <strong>바디매오</strong>가 예수님을 부르자 눈이 뜨였어요.<br>
+        우리도 떡뻥으로 바디매오의 얼굴을 만들며 믿음을 표현해요!
+      </div>
+    </div>
+  `},
+
+  // 7 — Activity 2 MATERIALS
+  { type:'mat', html:`
+    <div class="s-mat slide" id="s7">
+      <div class="section-label">먹거리 2 — 준비물</div>
+      <div class="section-title">필요한 재료를 확인해요</div>
+      <div class="mat-grid col3">
+        <div class="mat-item">
+          <div class="mat-icon">🍘</div>
+          <div class="mat-name">떡뻥</div>
+          <div class="mat-note">1인 1개 (얼굴 베이스)</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🍫</div>
+          <div class="mat-name">초코렛 (소스)</div>
+          <div class="mat-note">눈·코·입 그리기용</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🍬</div>
+          <div class="mat-name">과자류</div>
+          <div class="mat-note">귀, 머리 꾸미기용</div>
+        </div>
+      </div>
+      <div class="teacher-tip">초코렛 소스를 작은 짤주머니에 넣어두면 아이들이 쉽게 쓸 수 있어요!</div>
+    </div>
+  `},
+
+  // 8 — Activity 2 INFOGRAPHIC
+  { type:'infographic', html:`
+    <div class="s-infographic slide has-step-gallery" id="s8" data-gallery="food-rice-cake">
+      <div class="section-label">먹거리 2 — 만드는 순서</div>
+      <div class="section-title">바디매오 얼굴을 꾸며요</div>
+      <div class="step-cards">
+        <div class="step-card active">
+          <div class="sc-num">1</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="38" rx="28" ry="8" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.2)" stroke-width="1"/><ellipse cx="40" cy="28" rx="26" ry="22" fill="rgba(245,232,200,.7)" stroke="rgba(200,170,100,.6)" stroke-width="2"/><circle cx="30" cy="24" r="2" fill="rgba(180,140,70,.3)"/><circle cx="42" cy="20" r="1.5" fill="rgba(180,140,70,.25)"/><circle cx="50" cy="27" r="2" fill="rgba(180,140,70,.28)"/><text x="40" y="52" fill="rgba(255,152,0,.8)" font-size="6.5" text-anchor="middle">접시에 올리기</text></svg></div>
+          <div class="sc-label">떡뻥 준비</div>
+          <div class="sc-note">접시에<br>떡뻥 올리기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">2</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="32" cy="30" rx="22" ry="18" fill="rgba(245,232,200,.6)" stroke="rgba(200,170,100,.5)" stroke-width="1.5"/><ellipse cx="25" cy="25" rx="5" ry="6" fill="rgba(60,30,10,.7)" stroke="rgba(60,30,10,.5)" stroke-width="1"/><ellipse cx="39" cy="25" rx="5" ry="6" fill="rgba(60,30,10,.7)" stroke="rgba(60,30,10,.5)" stroke-width="1"/><ellipse cx="32" cy="34" rx="3" ry="2.5" fill="rgba(60,30,10,.6)"/><path d="M22,40 Q32,46 42,40" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="6" x2="45" y2="34" stroke="rgba(80,40,15,.8)" stroke-width="3" stroke-linecap="round"/><rect x="56" y="2" width="9" height="11" rx="3" fill="rgba(80,40,15,.7)"/><rect x="58" y="1" width="5" height="4" rx="1" fill="rgba(120,70,30,.6)"/></svg></div>
+          <div class="sc-label">눈·코·입 그리기</div>
+          <div class="sc-note">초코소스로<br>얼굴 표정 완성</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">3</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="35" cy="32" rx="22" ry="18" fill="rgba(245,232,200,.55)" stroke="rgba(200,170,100,.5)" stroke-width="1.5"/><ellipse cx="27" cy="27" rx="4" ry="5" fill="rgba(60,30,10,.6)"/><ellipse cx="43" cy="27" rx="4" ry="5" fill="rgba(60,30,10,.6)"/><path d="M26,38 Q35,44 44,38" fill="none" stroke="rgba(60,30,10,.65)" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="22" r="7" fill="rgba(255,100,150,.7)" stroke="rgba(255,100,150,.5)" stroke-width="1.5"/><circle cx="9" cy="19" r="2.5" fill="rgba(255,255,255,.4)"/><circle cx="60" cy="16" r="7" fill="rgba(255,215,0,.7)" stroke="rgba(255,215,0,.5)" stroke-width="1.5"/><text x="60" y="20" fill="white" font-size="10" text-anchor="middle">★</text><circle cx="68" cy="35" r="6" fill="rgba(100,180,255,.6)" stroke="rgba(100,180,255,.5)" stroke-width="1.5"/><circle cx="66" cy="32" r="2" fill="rgba(255,255,255,.4)"/></svg></div>
+          <div class="sc-label">과자로 꾸미기</div>
+          <div class="sc-note">머리·귀 등<br>자유롭게 장식</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">4</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="28" rx="22" ry="20" fill="rgba(245,232,200,.55)" stroke="rgba(200,170,100,.5)" stroke-width="1.5"/><path d="M29,22 Q33,24 37,22" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="2" stroke-linecap="round"/><path d="M43,22 Q47,24 51,22" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="2" stroke-linecap="round"/><ellipse cx="40" cy="30" rx="3" ry="2" fill="rgba(60,30,10,.5)"/><path d="M30,38 Q40,44 50,38" fill="none" stroke="rgba(60,30,10,.6)" stroke-width="1.8" stroke-linecap="round"/><text x="40" y="13" fill="rgba(255,152,0,.8)" font-size="7" text-anchor="middle">눈 감은 얼굴</text><line x1="18" y1="8" x2="30" y2="18" stroke="rgba(255,152,0,.5)" stroke-width="1.5" stroke-dasharray="2,2"/></svg></div>
+          <div class="sc-label">"눈 뜨게 해줘요"</div>
+          <div class="sc-note">처음엔 눈을<br>감게 그리기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">5</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="26" rx="22" ry="20" fill="rgba(245,232,200,.55)" stroke="rgba(200,170,100,.5)" stroke-width="1.5"/><ellipse cx="30" cy="21" rx="5" ry="6" fill="rgba(60,30,10,.6)"/><ellipse cx="50" cy="21" rx="5" ry="6" fill="rgba(60,30,10,.6)"/><circle cx="31" cy="19" r="2" fill="rgba(255,255,255,.45)"/><circle cx="51" cy="19" r="2" fill="rgba(255,255,255,.45)"/><ellipse cx="40" cy="28" rx="3" ry="2" fill="rgba(60,30,10,.5)"/><path d="M28,36 Q40,44 52,36" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="22" cy="30" rx="8" ry="5" fill="rgba(255,150,150,.3)"/><ellipse cx="58" cy="30" rx="8" ry="5" fill="rgba(255,150,150,.3)"/><text x="40" y="52" fill="rgba(255,152,0,.9)" font-size="6.5" text-anchor="middle">기도 후 맛보기!</text></svg></div>
+          <div class="sc-label">기도 후 맛보기</div>
+          <div class="sc-note">믿음으로<br>바디매오처럼!</div>
+        </div>
+      </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 처음엔 눈 감은 얼굴 → 기도 후 눈 뜬 얼굴 추가!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+    </div>
+  `},
+
+  // 9 — Activity 2 IMAGE
+  { type:'imgfull', html:`
+    <div class="s-imgfull slide" id="s9">
+      <div class="imgfull-label">📸 먹거리 2 — 완성 모습</div>
+      <div class="imgfull-wrap">
+        <svg viewBox="0 0 680 440" xmlns="http://www.w3.org/2000/svg" style="max-width:88%;max-height:70vh;">
+          <defs>
+            <radialGradient id="ddeokGrad" cx="50%" cy="40%" r="55%">
+              <stop offset="0%" stop-color="#f5e8c8"/>
+              <stop offset="70%" stop-color="#e8d4a0"/>
+              <stop offset="100%" stop-color="#d4bc80"/>
+            </radialGradient>
+            <radialGradient id="chocoDrop" cx="30%" cy="25%" r="60%">
+              <stop offset="0%" stop-color="#6b3d1e"/>
+              <stop offset="100%" stop-color="#3d1f08"/>
+            </radialGradient>
+            <radialGradient id="plateGrad" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0.04)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Dark background -->
+          <rect width="680" height="440" fill="#120800"/>
+
+          <!-- Plate -->
+          <ellipse cx="340" cy="340" rx="200" ry="28" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+          <ellipse cx="340" cy="335" rx="185" ry="22" fill="url(#plateGrad)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+          <!-- Title -->
+          <text x="340" y="50" fill="rgba(255,255,255,0.95)" font-size="26" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">바디매오의 얼굴 라이스 케이크!</text>
+          <text x="340" y="82" fill="rgba(255,152,0,0.85)" font-size="16" font-family="Malgun Gothic,sans-serif" text-anchor="middle">떡뻥 + 초코소스 + 과자 → 나만의 얼굴 완성! (누가복음 18장)</text>
+
+          <!-- DDEOKBBANG (rice cake base) — large circle -->
+          <ellipse cx="340" cy="230" rx="155" ry="148" fill="url(#ddeokGrad)" stroke="rgba(200,170,100,0.6)" stroke-width="3"/>
+          <!-- Texture dots on surface -->
+          <circle cx="270" cy="180" r="3" fill="rgba(180,140,70,0.3)"/>
+          <circle cx="310" cy="165" r="2.5" fill="rgba(180,140,70,0.25)"/>
+          <circle cx="360" cy="172" r="3" fill="rgba(180,140,70,0.28)"/>
+          <circle cx="400" cy="182" r="2.5" fill="rgba(180,140,70,0.25)"/>
+          <circle cx="280" cy="280" r="2.5" fill="rgba(180,140,70,0.22)"/>
+          <circle cx="400" cy="285" r="3" fill="rgba(180,140,70,0.25)"/>
+          <!-- Slight shadow on bottom of rice cake -->
+          <ellipse cx="340" cy="355" rx="148" ry="16" fill="rgba(0,0,0,0.25)"/>
+
+          <!-- LEFT EYE (chocolate drop) — closed/squinting eye (바디매오 before) -->
+          <ellipse cx="295" cy="202" rx="22" ry="20" fill="url(#chocoDrop)" stroke="rgba(80,40,10,0.4)" stroke-width="1.5"/>
+          <!-- Eye shine -->
+          <ellipse cx="288" cy="196" rx="7" ry="6" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="286" cy="195" r="3" fill="rgba(255,255,255,0.5)"/>
+
+          <!-- RIGHT EYE (chocolate drop) -->
+          <ellipse cx="385" cy="202" rx="22" ry="20" fill="url(#chocoDrop)" stroke="rgba(80,40,10,0.4)" stroke-width="1.5"/>
+          <!-- Eye shine -->
+          <ellipse cx="378" cy="196" rx="7" ry="6" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="376" cy="195" r="3" fill="rgba(255,255,255,0.5)"/>
+
+          <!-- NOSE (small dot) -->
+          <ellipse cx="340" cy="238" rx="7" ry="6" fill="url(#chocoDrop)"/>
+
+          <!-- SMILE (chocolate line curved) -->
+          <path d="M305,268 Q340,300 375,268" fill="none" stroke="#3d1f08" stroke-width="6" stroke-linecap="round"/>
+
+          <!-- Rosy cheeks -->
+          <ellipse cx="262" cy="250" rx="22" ry="16" fill="rgba(255,120,120,0.35)"/>
+          <ellipse cx="418" cy="250" rx="22" ry="16" fill="rgba(255,120,120,0.35)"/>
+
+          <!-- Candy/cookie decorations around the edge -->
+          <!-- Top center: star candy -->
+          <text x="340" y="100" fill="#FFD700" font-size="22" text-anchor="middle">★</text>
+          <!-- Top left: pink candy -->
+          <circle cx="222" cy="150" r="12" fill="#ff6b9d" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="218" cy="146" r="4" fill="rgba(255,255,255,0.4)"/>
+          <!-- Top right: yellow candy -->
+          <circle cx="458" cy="150" r="12" fill="#ffd700" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="454" cy="146" r="4" fill="rgba(255,255,255,0.4)"/>
+          <!-- Left: green candy -->
+          <circle cx="192" cy="230" r="11" fill="#4caf50" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="188" cy="226" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          <!-- Right: orange candy -->
+          <circle cx="488" cy="230" r="11" fill="#ff9800" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="484" cy="226" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          <!-- Bottom left: purple candy -->
+          <circle cx="220" cy="310" r="12" fill="#9c27b0" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="216" cy="306" r="4" fill="rgba(255,255,255,0.4)"/>
+          <!-- Bottom right: red candy -->
+          <circle cx="460" cy="310" r="12" fill="#f44336" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <circle cx="456" cy="306" r="4" fill="rgba(255,255,255,0.4)"/>
+          <!-- Bottom center: heart candy -->
+          <text x="340" y="350" fill="#f06292" font-size="22" text-anchor="middle">♥</text>
+
+          <!-- Chocolate drizzle art lines around face -->
+          <path d="M295,160 Q280,145 295,130" fill="none" stroke="rgba(80,40,10,0.35)" stroke-width="2.5" stroke-dasharray="3"/>
+          <path d="M385,160 Q400,145 385,130" fill="none" stroke="rgba(80,40,10,0.35)" stroke-width="2.5" stroke-dasharray="3"/>
+
+          <!-- Label -->
+          <text x="340" y="405" fill="rgba(255,255,255,0.9)" font-size="20" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">🍘 초코소스로 바디매오 얼굴을 꾸며봐요!</text>
+        </svg>
+      </div>
+    </div>
+  `},
+
+  // 10 — Activity 2 APPLY
+  { type:'apply', html:`
+    <div class="s-apply slide" id="s10">
+      <div class="section-label">먹거리 2 — 나눔과 기도</div>
+      <div class="section-title">함께 이야기해요</div>
+      <div class="apply-qs">
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 1</div>
+          바디매오는 왜 사람들이 막는데도 계속 예수님을 불렀을까요?
+        </div>
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 2</div>
+          내가 예수님께 간절히 부탁하고 싶은 것이 있다면 무엇인가요?
+        </div>
+      </div>
+      <div class="prayer-box">
+        <div class="prayer-title">🙏 기도</div>
+        예수님, 바디매오처럼 포기하지 않고 믿음으로 구하게 해 주세요.<br>
+        우리의 눈과 마음을 열어주셔서 감사해요. 아멘.
+      </div>
+    </div>
+  `},
+
+  // 11 — Activity 3 INTRO: 초코파이 빈 무덤
+  { type:'intro', html:`
+    <div class="s-intro slide" id="s11">
+      <div class="act-number">먹거리 활동 3 / 3</div>
+      <div class="act-title">초코파이<br><span>빈 무덤</span></div>
+      <div class="act-verse">
+        "어찌하여 살아 있는 자를 죽은 자 가운데서 찾느냐<br>
+        여기 계시지 않고 살아나셨느니라…"<br>
+        <strong>— 누가복음 24:5-6</strong>
+      </div>
+      <div class="act-message">
+        예수님이 부활하셨어요! 무덤은 <strong>비어 있었어요</strong>.<br>
+        초코파이로 빈 무덤을 직접 만들며 부활의 기쁨을 느껴봐요!
+      </div>
+    </div>
+  `},
+
+  // 12 — Activity 3 MATERIALS
+  { type:'mat', html:`
+    <div class="s-mat slide" id="s12">
+      <div class="section-label">먹거리 3 — 준비물</div>
+      <div class="section-title">필요한 재료를 확인해요</div>
+      <div class="mat-grid col5">
+        <div class="mat-item">
+          <div class="mat-icon">🍪</div>
+          <div class="mat-name">크래커</div>
+          <div class="mat-note">언덕 모양 받침</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🧁</div>
+          <div class="mat-name">크림치즈</div>
+          <div class="mat-note">언덕 표현용</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🍫</div>
+          <div class="mat-name">초코파이</div>
+          <div class="mat-note">무덤 역할</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🍪</div>
+          <div class="mat-name">오레오</div>
+          <div class="mat-note">굴린 돌 역할</div>
+        </div>
+        <div class="mat-item">
+          <div class="mat-icon">🚩</div>
+          <div class="mat-name">깃발</div>
+          <div class="mat-note">색종이+꼬치막대</div>
+        </div>
+      </div>
+      <div class="teacher-tip">깃발에 미리 "예수님 부활하셨어요!"를 적어 두면 더욱 의미 있어요!</div>
+    </div>
+  `},
+
+  // 13 — Activity 3 INFOGRAPHIC
+  { type:'infographic', html:`
+    <div class="s-infographic slide has-step-gallery" id="s13" data-gallery="food-empty-tomb">
+      <div class="section-label">먹거리 3 — 만드는 순서</div>
+      <div class="section-title">빈 무덤을 만들어요</div>
+      <div class="step-cards">
+        <div class="step-card active">
+          <div class="sc-num">1</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="30" width="52" height="16" rx="4" fill="rgba(212,168,85,.7)" stroke="rgba(184,138,48,.8)" stroke-width="2"/><line x1="30" y1="30" x2="30" y2="46" stroke="rgba(160,110,30,.4)" stroke-width="1.5"/><line x1="46" y1="30" x2="46" y2="46" stroke="rgba(160,110,30,.4)" stroke-width="1.5"/><line x1="14" y1="38" x2="66" y2="38" stroke="rgba(160,110,30,.4)" stroke-width="1.5"/><rect x="14" y="22" width="52" height="10" rx="3" fill="rgba(255,250,240,.55)" stroke="rgba(220,200,160,.5)" stroke-width="1.5"/><text x="40" y="31" fill="rgba(180,140,80,.7)" font-size="6" text-anchor="middle">크림치즈</text><text x="40" y="52" fill="rgba(255,152,0,.7)" font-size="6" text-anchor="middle">크래커 언덕</text></svg></div>
+          <div class="sc-label">크래커 언덕</div>
+          <div class="sc-note">크래커에 크림치즈<br>발라 언덕 만들기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">2</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="34" width="36" height="10" rx="3" fill="rgba(212,168,85,.55)" stroke="rgba(184,138,48,.6)" stroke-width="1.5"/><ellipse cx="30" cy="26" rx="18" ry="16" fill="rgba(60,25,8,.85)" stroke="rgba(80,40,10,.6)" stroke-width="2"/><ellipse cx="30" cy="18" rx="16" ry="10" fill="rgba(45,18,5,.9)"/><ellipse cx="24" cy="14" rx="6" ry="4" fill="rgba(255,255,255,.08)"/><ellipse cx="30" cy="33" rx="14" ry="5" fill="rgba(255,250,240,.35)" stroke="rgba(220,200,160,.3)" stroke-width="1"/><ellipse cx="30" cy="31" rx="10" ry="7" fill="#060300"/><ellipse cx="30" cy="30" rx="8" ry="5" fill="#030100"/><text x="55" y="28" fill="rgba(200,160,80,.8)" font-size="6" text-anchor="middle">초코파이</text><text x="55" y="36" fill="rgba(255,255,255,.4)" font-size="5.5" text-anchor="middle">무덤</text><line x1="50" y1="28" x2="46" y2="28" stroke="rgba(200,160,80,.4)" stroke-width="1"/></svg></div>
+          <div class="sc-label">초코파이 무덤</div>
+          <div class="sc-note">언덕 위에<br>초코파이 올리기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">3</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="32" width="34" height="10" rx="3" fill="rgba(212,168,85,.45)" stroke="rgba(184,138,48,.5)" stroke-width="1.5"/><ellipse cx="20" cy="24" rx="15" ry="14" fill="rgba(45,18,5,.8)" stroke="rgba(80,40,10,.5)" stroke-width="1.5"/><ellipse cx="20" cy="22" rx="13" ry="8" fill="rgba(35,12,3,.9)"/><ellipse cx="20" cy="30" rx="12" ry="4" fill="rgba(255,250,240,.3)" stroke="rgba(220,200,160,.3)" stroke-width="1"/><ellipse cx="20" cy="28" rx="8" ry="6" fill="#060300"/><circle cx="55" cy="28" r="18" fill="rgba(30,30,30,.85)" stroke="rgba(70,70,70,.6)" stroke-width="2"/><circle cx="55" cy="28" r="13" fill="rgba(255,255,255,.06)" stroke="rgba(180,180,180,.25)" stroke-width="1"/><text x="55" y="33" fill="rgba(200,200,200,.55)" font-size="8" text-anchor="middle">OREO</text><text x="55" y="51" fill="rgba(255,152,0,.7)" font-size="6" text-anchor="middle">오레오=돌</text></svg></div>
+          <div class="sc-label">오레오 돌</div>
+          <div class="sc-note">무덤 앞에<br>오레오 세우기</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">4</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="30" rx="15" ry="14" fill="rgba(45,18,5,.75)" stroke="rgba(80,40,10,.5)" stroke-width="1.5"/><ellipse cx="22" cy="27" rx="13" ry="8" fill="rgba(35,12,3,.85)"/><ellipse cx="22" cy="35" rx="11" ry="4" fill="rgba(255,250,240,.25)"/><ellipse cx="22" cy="33" rx="7" ry="5" fill="#060300"/><circle cx="56" cy="38" r="14" fill="rgba(30,30,30,.7)" stroke="rgba(70,70,70,.5)" stroke-width="1.5"/><text x="56" y="43" fill="rgba(180,180,180,.5)" font-size="7" text-anchor="middle">OREO</text><path d="M34,25 Q42,15 52,24" fill="none" stroke="rgba(255,152,0,.7)" stroke-width="2" stroke-dasharray="4,2"/><polygon points="50,20 56,26 52,28" fill="rgba(255,152,0,.7)"/><line x1="36" y1="8" x2="36" y2="24" stroke="rgba(180,140,60,.8)" stroke-width="2.5" stroke-linecap="round"/><path d="M36,8 L55,15 L36,22 Z" fill="rgba(255,152,0,.85)" stroke="rgba(255,152,0,.5)" stroke-width="1.5"/><text x="46" y="18" fill="white" font-size="5.5" text-anchor="middle" font-weight="bold">부활!</text></svg></div>
+          <div class="sc-label">돌을 옆으로!</div>
+          <div class="sc-note">오레오 굴리고<br>깃발 꽂기!</div>
+        </div>
+        <div class="step-card">
+          <div class="sc-num">5</div>
+          <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="32" cy="34" rx="22" ry="14" fill="rgba(45,18,5,.65)" stroke="rgba(80,40,10,.4)" stroke-width="1.5"/><ellipse cx="32" cy="30" rx="18" ry="9" fill="rgba(35,12,3,.8)"/><ellipse cx="32" cy="36" rx="18" ry="5" fill="rgba(255,250,240,.2)"/><ellipse cx="32" cy="34" rx="12" ry="6" fill="#050200"/><line x1="32" y1="22" x2="32" y2="4" stroke="rgba(180,140,60,.8)" stroke-width="2.5" stroke-linecap="round"/><path d="M32,4 L58,12 L32,20 Z" fill="rgba(255,152,0,.85)" stroke="rgba(255,152,0,.5)" stroke-width="1.5"/><text x="46" y="14" fill="white" font-size="6" text-anchor="middle" font-weight="bold">부활!</text><text x="32" y="52" fill="rgba(255,215,0,.9)" font-size="7" text-anchor="middle" font-weight="bold">예수님 부활하셨어요!</text></svg></div>
+          <div class="sc-label">부활 선포!</div>
+          <div class="sc-note">"예수님<br>부활하셨어요!"</div>
+        </div>
+      </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 오레오(돌)를 옆으로 굴리는 순간이 하이라이트!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+    </div>
+  `},
+
+  // 14 — Activity 3 IMAGE (빈 무덤 완성 그림)
+  { type:'imgfull', html:`
+    <div class="s-imgfull slide" id="s14">
+      <div class="imgfull-label">📸 먹거리 3 — 완성 모습</div>
+      <div class="imgfull-wrap">
+        <svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" style="max-width:88%;max-height:70vh;">
+          <defs>
+            <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8B6914" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#5c4210" stop-opacity="0.9"/>
+            </linearGradient>
+            <radialGradient id="hillGrad" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stop-color="#c8a050"/>
+              <stop offset="100%" stop-color="#8B6914"/>
+            </radialGradient>
+            <radialGradient id="chopieGrad" cx="35%" cy="25%" r="55%">
+              <stop offset="0%" stop-color="#5a3010"/>
+              <stop offset="100%" stop-color="#2a1205"/>
+            </radialGradient>
+            <radialGradient id="oreoGrad" cx="35%" cy="25%" r="55%">
+              <stop offset="0%" stop-color="#333"/>
+              <stop offset="100%" stop-color="#111"/>
+            </radialGradient>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0a0520"/>
+              <stop offset="100%" stop-color="#1a0d08"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Sky background -->
+          <rect width="760" height="440" fill="url(#skyGrad)"/>
+          <!-- Stars in sky -->
+          <circle cx="80" cy="40" r="2" fill="white" opacity="0.6"/>
+          <circle cx="150" cy="65" r="1.5" fill="white" opacity="0.5"/>
+          <circle cx="230" cy="30" r="2" fill="white" opacity="0.7"/>
+          <circle cx="350" cy="50" r="1.5" fill="white" opacity="0.5"/>
+          <circle cx="500" cy="35" r="2" fill="white" opacity="0.65"/>
+          <circle cx="620" cy="55" r="1.5" fill="white" opacity="0.55"/>
+          <circle cx="700" cy="30" r="2" fill="white" opacity="0.6"/>
+          <!-- Cross in sky (부활 상징) -->
+          <rect x="680" y="40" width="10" height="36" rx="3" fill="rgba(255,215,0,0.7)"/>
+          <rect x="668" y="52" width="34" height="10" rx="3" fill="rgba(255,215,0,0.7)"/>
+          <!-- Glow around cross -->
+          <ellipse cx="685" cy="58" rx="28" ry="22" fill="rgba(255,215,0,0.1)"/>
+
+          <!-- Ground layer -->
+          <rect x="0" y="330" width="760" height="110" fill="url(#groundGrad)"/>
+          <!-- Ground texture lines -->
+          <line x1="0" y1="335" x2="760" y2="335" stroke="rgba(180,130,50,0.3)" stroke-width="1"/>
+          <line x1="0" y1="345" x2="760" y2="345" stroke="rgba(150,100,30,0.2)" stroke-width="1"/>
+
+          <!-- CRACKER base (언덕 크래커) — the sandy hill -->
+          <ellipse cx="310" cy="330" rx="200" ry="22" fill="rgba(0,0,0,0.3)"/>
+          <!-- Cracker platform -->
+          <rect x="140" y="295" width="340" height="52" rx="6" fill="#d4a855" stroke="#b88a30" stroke-width="2.5"/>
+          <!-- Cracker grid pattern -->
+          <line x1="210" y1="295" x2="210" y2="347" stroke="rgba(160,110,30,0.4)" stroke-width="1.5"/>
+          <line x1="280" y1="295" x2="280" y2="347" stroke="rgba(160,110,30,0.4)" stroke-width="1.5"/>
+          <line x1="350" y1="295" x2="350" y2="347" stroke="rgba(160,110,30,0.4)" stroke-width="1.5"/>
+          <line x1="420" y1="295" x2="420" y2="347" stroke="rgba(160,110,30,0.4)" stroke-width="1.5"/>
+          <line x1="140" y1="320" x2="480" y2="320" stroke="rgba(160,110,30,0.4)" stroke-width="1.5"/>
+          <!-- Cream cheese spread on cracker -->
+          <rect x="142" y="282" width="336" height="18" rx="5" fill="rgba(255,250,240,0.65)" stroke="rgba(220,200,160,0.5)" stroke-width="1.5"/>
+          <text x="310" y="294" fill="rgba(180,140,80,0.7)" font-size="11" font-family="Malgun Gothic,sans-serif" text-anchor="middle">크림치즈 (언덕)</text>
+
+          <!-- HILL mound shape (크래커 + 크림치즈 언덕 형태) -->
+          <ellipse cx="310" cy="283" rx="170" ry="28" fill="rgba(255,250,240,0.15)"/>
+
+          <!-- CHOCOPIE (무덤) — round dome shape on hill -->
+          <ellipse cx="295" cy="248" rx="68" ry="58" fill="url(#chopieGrad)" stroke="rgba(80,40,10,0.5)" stroke-width="2.5"/>
+          <!-- Chocopie top dome arch -->
+          <ellipse cx="295" cy="225" rx="62" ry="36" fill="rgba(60,25,8,0.85)"/>
+          <!-- Chocopie sheen -->
+          <ellipse cx="278" cy="215" rx="20" ry="12" fill="rgba(255,255,255,0.1)"/>
+          <!-- Marshmallow filling visible at base -->
+          <ellipse cx="295" cy="264" rx="60" ry="10" fill="rgba(255,250,240,0.4)" stroke="rgba(220,200,160,0.3)" stroke-width="1"/>
+          <!-- Cave opening (무덤 입구) -->
+          <ellipse cx="295" cy="258" rx="30" ry="22" fill="#0a0500"/>
+          <ellipse cx="295" cy="256" rx="26" ry="18" fill="#050200"/>
+          <text x="295" y="285" fill="rgba(255,200,100,0.6)" font-size="10" font-family="Malgun Gothic,sans-serif" text-anchor="middle">빈 무덤!</text>
+
+          <!-- OREO (굴린 돌) — pushed to the side -->
+          <ellipse cx="448" cy="298" rx="8" ry="44" fill="rgba(0,0,0,0.3)"/>
+          <ellipse cx="440" cy="295" rx="42" ry="42" fill="url(#oreoGrad)" stroke="rgba(80,80,80,0.5)" stroke-width="2"/>
+          <!-- Oreo cream center -->
+          <ellipse cx="440" cy="295" rx="32" ry="32" fill="rgba(255,255,255,0.08)" stroke="rgba(200,200,200,0.25)" stroke-width="1"/>
+          <!-- Oreo pattern detail -->
+          <ellipse cx="440" cy="295" rx="26" ry="26" fill="rgba(255,255,255,0.12)"/>
+          <text x="440" y="300" fill="rgba(200,200,200,0.6)" font-size="11" font-family="Malgun Gothic,sans-serif" text-anchor="middle">OREO</text>
+          <!-- Rolling arrows showing oreo was moved -->
+          <path d="M380,270 Q400,250 420,265" fill="none" stroke="rgba(255,152,0,0.6)" stroke-width="2" stroke-dasharray="5,3"/>
+          <polygon points="418,260 425,270 415,272" fill="rgba(255,152,0,0.6)"/>
+          <text x="390" y="248" fill="rgba(255,152,0,0.8)" font-size="12" font-family="Malgun Gothic,sans-serif" text-anchor="middle">돌을 옆으로!</text>
+
+          <!-- VICTORY FLAG (부활 깃발) -->
+          <!-- Flag pole -->
+          <line x1="295" y1="198" x2="295" y2="130" stroke="rgba(180,150,80,0.9)" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- Flag body -->
+          <path d="M295,130 L370,145 L295,160 Z" fill="#FF9800" stroke="rgba(255,150,0,0.5)" stroke-width="1.5"/>
+          <!-- Flag text -->
+          <text x="330" y="152" fill="white" font-size="12" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">부활!</text>
+          <!-- Sparkle around flag -->
+          <text x="380" y="134" fill="rgba(255,220,60,0.85)" font-size="14">✨</text>
+          <text x="262" y="128" fill="rgba(255,220,60,0.7)" font-size="12">✦</text>
+
+          <!-- Title -->
+          <text x="380" y="50" fill="rgba(255,255,255,0.95)" font-size="24" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">초코파이 빈 무덤 완성!</text>
+          <text x="380" y="80" fill="rgba(255,152,0,0.85)" font-size="16" font-family="Malgun Gothic,sans-serif" text-anchor="middle">오레오(돌)를 옆으로 굴리고 깃발을 꽂아요!</text>
+
+          <!-- Labels -->
+          <text x="178" y="270" fill="rgba(200,160,80,0.85)" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">초코파이</text>
+          <text x="178" y="287" fill="rgba(255,255,255,0.5)" font-size="11" font-family="Malgun Gothic,sans-serif" text-anchor="middle">(무덤)</text>
+          <line x1="222" y1="275" x2="248" y2="265" stroke="rgba(200,160,80,0.4)" stroke-width="1.5"/>
+
+          <text x="565" y="280" fill="rgba(180,180,180,0.85)" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">오레오</text>
+          <text x="565" y="297" fill="rgba(255,255,255,0.5)" font-size="11" font-family="Malgun Gothic,sans-serif" text-anchor="middle">(굴린 돌)</text>
+          <line x1="500" y1="288" x2="485" y2="290" stroke="rgba(180,180,180,0.4)" stroke-width="1.5"/>
+
+          <text x="560" y="345" fill="rgba(200,160,80,0.8)" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">크래커 언덕</text>
+          <line x1="516" y1="340" x2="480" y2="330" stroke="rgba(200,160,80,0.4)" stroke-width="1.5"/>
+
+          <!-- Big celebration text -->
+          <text x="380" y="410" fill="rgba(255,200,60,0.95)" font-size="22" font-family="Malgun Gothic,sans-serif" font-weight="bold" text-anchor="middle">🎉 "예수님 부활하셨어요!" 다함께 외쳐요! 🎉</text>
+        </svg>
+      </div>
+    </div>
+  `},
+
+  // 15 — Activity 3 APPLY
+  { type:'apply', html:`
+    <div class="s-apply slide" id="s15">
+      <div class="section-label">먹거리 3 — 나눔과 기도</div>
+      <div class="section-title">함께 이야기해요</div>
+      <div class="apply-qs">
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 1</div>
+          돌이 굴러간 빈 무덤을 발견했을 때 제자들의 기분은 어땠을까요?
+        </div>
+        <div class="apply-q">
+          <div class="q-label">💬 나눔 질문 2</div>
+          예수님의 부활은 우리에게 어떤 희망을 주나요?
+        </div>
+      </div>
+      <div class="prayer-box">
+        <div class="prayer-title">🙏 기도</div>
+        부활하신 예수님, 우리에게 생명과 희망을 주셔서 감사해요.<br>
+        우리도 부활의 기쁨을 전하는 어린이가 되게 해 주세요. 아멘.
+      </div>
+    </div>
+  `},
+
+  // 15 — FINALE
+  { type:'finale', html:`
+    <div class="s-finale slide" id="s15">
+      <div class="finale-icon">🎊</div>
+      <div class="finale-title">미식투어 완료!</div>
+      <div class="finale-verse">
+        "오늘 우리는 예수님의 기적을<br>직접 맛보고 느꼈어요!<br>예수님은 누구신가요?"
+      </div>
+      <div class="finale-grid">
+        <div class="finale-item">
+          <div class="fi-icon">💧</div>
+          <div class="fi-text">기적을 행하시는<br>예수님</div>
+        </div>
+        <div class="finale-item">
+          <div class="fi-icon">👁️</div>
+          <div class="fi-text">믿음에 응답하시는<br>예수님</div>
+        </div>
+        <div class="finale-item">
+          <div class="fi-icon">✝️</div>
+          <div class="fi-text">부활하신<br>예수님</div>
+        </div>
+      </div>
+    </div>
+  `}
+];
+
+let cur = 0;
+const area = document.getElementById('slideArea');
+const dotsEl = document.getElementById('dots');
+const counterEl = document.getElementById('counter');
+
+// Build slides
+slides.forEach((s, i) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = s.html.trim();
+  const el = wrapper.firstElementChild;
+  el.id = 's' + i;
+  if (i !== 0) { el.classList.remove('active'); }
+  else { el.classList.add('active'); }
+  area.appendChild(el);
+});
+
+// Build dots
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function updateUI() {
+  const dots = dotsEl.querySelectorAll('.dot');
+  dots.forEach((d, i) => {
+    d.className = 'dot' + (i === cur ? ' active' : i < cur ? ' done' : '');
+  });
+  counterEl.textContent = (cur + 1) + ' / ' + slides.length;
+  document.getElementById('btnPrev').disabled = cur === 0;
+  document.getElementById('btnNext').disabled = false;
+  document.getElementById('btnPrevBottom').disabled = cur === 0;
+  document.getElementById('btnNextBottom').disabled = false;
+  const a = cur >= 11 ? 'aj3' : cur >= 6 ? 'aj2' : 'aj1';
+  ['aj1','aj2','aj3'].forEach(id => { const b = document.getElementById(id); if(b) b.className = 'act-jump' + (id === a ? ' on' : ''); });
+  updateDetail(document.getElementById('s' + cur), subStep);
+}
+
+let subStep = 0;
+function updateCards(s){
+  const sl = document.getElementById('s' + cur);
+  if(!sl) return;
+  [...sl.querySelectorAll('.step-card')].forEach((c,i)=>{
+    c.className='step-card'+(i===s?' active':i<s?' done':'');
+  });
+  updateDetail(sl,s);
+}
+function updateDetail(sl,s){
+  if(!sl)return;
+  const detail=sl.querySelector('.step-detail');if(!detail)return;
+  const card=sl.querySelectorAll('.step-card')[s];if(!card)return;
+  const title=card.querySelector('.sc-label')?.innerText||'';
+  const note=card.querySelector('.sc-note')?.innerText.replace(/\n/g,' ')||'';
+  const count=sl.querySelectorAll('.step-card').length;
+  let progress=detail.querySelector('.step-progress');
+  if(!progress){ progress=document.createElement('div'); progress.className='step-progress'; detail.querySelector('.step-detail-head').insertAdjacentElement('afterend',progress); }
+  progress.innerHTML=[...Array(count)].map((_,i)=>`<span class="step-progress-dot ${i===s?'active':i<s?'done':''}"></span>`).join('');
+  detail.querySelector('.step-detail-num').textContent=String(s+1).padStart(2,'0');
+  detail.querySelector('.step-detail-title').textContent=title;
+  detail.querySelector('.step-detail-note').textContent=note;
+  const img=detail.querySelector('.step-detail-img');img.src=`img/activity/steps/${sl.dataset.gallery}-${s+1}.png`;img.alt=`${title} 활동 사진`;
+}
+function goTo(n) {
+  if (n >= slides.length) { location.href = 'index.html'; return; }
+  // handle sub-steps on infographic slides
+  const sl = document.getElementById('s' + cur);
+  if(sl) {
+    const cards = sl.querySelectorAll('.step-card');
+    if(cards.length > 0) {
+      if(n > cur && subStep < cards.length - 1) { subStep++; updateCards(subStep); return; }
+      if(n < cur && subStep > 0) { subStep--; updateCards(subStep); return; }
+    }
+  }
+  const prev = cur;
+  cur = Math.max(0, Math.min(slides.length - 1, n));
+  if (prev === cur) return;
+  const prevEl = document.getElementById('s' + prev);
+  const curEl  = document.getElementById('s' + cur);
+  prevEl.classList.remove('active');
+  prevEl.classList.add(n > prev ? 'prev' : '');
+  if (n <= prev) prevEl.classList.remove('prev');
+  curEl.classList.remove('prev');
+  curEl.classList.add('active');
+  subStep = 0;
+  // init first card of new slide
+  setTimeout(()=>{ const newSl=document.getElementById('s'+cur); if(newSl&&newSl.querySelectorAll('.step-card').length>0) updateCards(0); }, 50);
+  updateUI();
+}
+
+function go(d) { goTo(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === '1') goTo(1);
+  if (e.key === '2') goTo(6);
+  if (e.key === '3') goTo(11);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  if (e.key === 'f' || e.key === 'F') toggleFS();
+});
+document.addEventListener('click', e => { const card=e.target.closest('.has-step-gallery .step-card'); if(!card)return; const sl=card.closest('.slide'); if(!sl?.classList.contains('active'))return; subStep=[...sl.querySelectorAll('.step-card')].indexOf(card); updateCards(subStep); });
+
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+const lightbox = document.createElement('div');
+lightbox.className = 'photo-lightbox';
+lightbox.innerHTML = '<button type="button" aria-label="사진 닫기">×</button><img alt="확대된 활동 사진">';
+document.body.appendChild(lightbox);
+const lightboxImg = lightbox.querySelector('img');
+document.addEventListener('click', e => {
+  const img = e.target.closest('.activity-photo img, .step-detail-photo img');
+  if (img) { lightboxImg.src = img.src; lightboxImg.alt = img.alt; lightbox.classList.add('open'); }
+  else if (e.target === lightbox || e.target.closest('.photo-lightbox button')) lightbox.classList.remove('open');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+
+updateUI();
+</script>
+</body>
+</html>

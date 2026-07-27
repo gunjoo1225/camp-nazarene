@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>액션투어 — BIBLE TOUR 2026</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Malgun Gothic','맑은 고딕',sans-serif; background:#12050a; color:#fff; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+.top-nav { display:flex; align-items:center; justify-content:space-between; padding:12px 32px; background:rgba(0,0,0,.5); border-bottom:2px solid #c0392b; flex-shrink:0; }
+.nav-home { color:rgba(255,255,255,.5); text-decoration:none; font-size:1rem; }
+.nav-home:hover { color:#fff; }
+.nav-title { font-size:1.3rem; font-weight:900; color:#f44336; letter-spacing:.12em; }
+.progress-wrap { display:flex; align-items:center; gap:10px; }
+.dots-row { display:flex; gap:7px; }
+.dot { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,.18); cursor:pointer; transition:all .3s; }
+.dot.active { background:#f44336; transform:scale(1.3); }
+.dot.done { background:rgba(244,67,54,.4); }
+.slide-ctr { font-size:.9rem; color:rgba(255,255,255,.45); min-width:55px; text-align:right; }
+.slide-area { flex:1; position:relative; overflow:hidden; }
+.slide { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transform:translateX(80px); transition:all .4s cubic-bezier(.4,0,.2,1); pointer-events:none; padding:28px 48px; }
+.slide.active { opacity:1; transform:translateX(0); pointer-events:all; }
+.slide.prev { opacity:0; transform:translateX(-80px); }
+
+.s-cover { flex-direction:column; text-align:center; background:linear-gradient(135deg,#2d0808 0%,#110203 100%); }
+.badge { display:inline-block; background:#f44336; color:#fff; font-weight:700; font-size:1rem; padding:8px 24px; border-radius:30px; letter-spacing:.12em; margin-bottom:20px; }
+.cover-h1 { font-size:5.5rem; font-weight:900; line-height:1; }
+.cover-h1 span { color:#f44336; }
+.cover-sub { font-size:1.6rem; color:rgba(255,255,255,.65); margin-top:14px; }
+.cover-body { max-width:700px; font-size:1.25rem; line-height:1.85; color:rgba(255,255,255,.8); margin-top:24px; }
+.chip-row { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:24px; }
+.chip { background:rgba(244,67,54,.18); border:1px solid rgba(244,67,54,.4); border-radius:14px; padding:10px 22px; font-size:1rem; }
+
+.s-game-intro { flex-direction:column; align-items:flex-start; background:#100308; }
+.act-badge { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.act-badge .num { width:52px; height:52px; background:#f44336; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:900; flex-shrink:0; }
+.act-badge .lbl { font-size:1rem; color:rgba(255,255,255,.5); letter-spacing:.12em; }
+.act-h2 { font-size:3.2rem; font-weight:900; line-height:1.15; margin-bottom:18px; }
+.act-h2 span { color:#f44336; }
+.verse-box { width:100%; background:rgba(244,67,54,.12); border-left:6px solid #f44336; border-radius:0 16px 16px 0; padding:16px 24px; margin-bottom:20px; }
+.verse-ref { font-size:.9rem; color:#f44336; font-weight:700; letter-spacing:.1em; margin-bottom:8px; }
+.verse-text { font-size:1.2rem; line-height:1.75; color:rgba(255,255,255,.9); }
+.obj-label { font-size:.85rem; color:#f44336; font-weight:700; letter-spacing:.15em; margin-bottom:10px; }
+.obj-text { font-size:1.25rem; line-height:1.8; color:rgba(255,255,255,.85); }
+
+.s-mat { flex-direction:column; align-items:flex-start; background:#100308; }
+.mat-header { margin-bottom:24px; }
+.mat-act-label { font-size:.9rem; color:#f44336; font-weight:700; letter-spacing:.12em; margin-bottom:6px; }
+.mat-h2 { font-size:3rem; font-weight:900; }
+.mat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; width:100%; }
+.mat-card { background:rgba(255,255,255,.06); border:2px solid rgba(244,67,54,.28); border-radius:18px; padding:20px 18px; display:flex; align-items:center; gap:14px; }
+.mat-card .m-ico { font-size:2rem; flex-shrink:0; }
+.mat-card .m-txt { font-size:1.1rem; line-height:1.5; color:rgba(255,255,255,.9); font-weight:600; }
+.mat-card.wide { grid-column:span 3; }
+.mat-card.span2 { grid-column:span 2; }
+
+.s-infographic { flex-direction:column; align-items:flex-start; background:#100308; }
+.info-header { margin-bottom:18px; }
+.info-act-label { font-size:.9rem; color:#f44336; font-weight:700; letter-spacing:.12em; margin-bottom:6px; }
+.info-h2 { font-size:2.6rem; font-weight:900; }
+.info-flow { display:flex; align-items:stretch; gap:10px; width:100%; flex-wrap:nowrap; }
+.flow-card { flex:1; min-width:0; background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.3); border-radius:16px; padding:16px 12px; text-align:center; }
+.flow-card .f-step { font-size:.75rem; color:#f44336; font-weight:700; letter-spacing:.1em; margin-bottom:8px; }
+.flow-card .f-icon { font-size:2.2rem; margin-bottom:8px; }
+.flow-card .f-txt { font-size:.95rem; line-height:1.45; color:rgba(255,255,255,.85); font-weight:600; }
+.flow-arrow { font-size:1.8rem; color:rgba(244,67,54,.5); flex-shrink:0; display:flex; align-items:center; }
+.step-cards { display:flex; gap:14px; width:100%; align-items:stretch; flex:1; }
+.step-card {
+  flex:1; text-align:center; padding:22px 10px; border-radius:22px;
+  border:2px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+  opacity:.28; transform:scale(.88);
+}
+.step-card.done { opacity:.52; transform:scale(.94); border-color:rgba(244,67,54,.35); background:rgba(244,67,54,.09); }
+.step-card.active { opacity:1; transform:scale(1.06); border-color:#f44336; background:rgba(244,67,54,.22); box-shadow:0 0 34px rgba(244,67,54,.28); }
+.sc-num { width:34px;height:34px; border-radius:50%; background:rgba(255,255,255,.12); display:flex;align-items:center;justify-content:center; font-size:.95rem; font-weight:900; flex-shrink:0; }
+.step-card.active .sc-num { background:#f44336; color:#fff; }
+.step-card.done .sc-num { background:rgba(244,67,54,.4); }
+.sc-icon { display:flex; align-items:center; justify-content:center; width:100%; height:52px; transition:transform .35s; }
+.sc-icon svg { width:90%; max-height:52px; }
+.step-card.active .sc-icon { transform:scale(1.12); height:58px; }
+.sc-label { font-size:.95rem; font-weight:700; color:rgba(255,255,255,.45); transition:all .35s; }
+.step-card.active .sc-label { color:#fff; font-size:1.1rem; }
+.sc-note { font-size:.78rem; color:rgba(255,255,255,.25); line-height:1.4; transition:color .35s; }
+.step-card.active .sc-note { color:rgba(255,255,255,.72); }
+.step-card.done .sc-label { color:rgba(255,255,255,.6); }
+.step-card.done .sc-note { color:rgba(255,255,255,.4); }
+.step-hint { font-size:.82rem; color:rgba(255,255,255,.28); text-align:center; margin-top:8px; letter-spacing:.05em; }
+.s-infographic.has-photo .step-cards { flex:0 0 250px; }
+.activity-photo { width:min(570px,100%); height:clamp(190px,34vh,380px); margin:14px auto 0; overflow:hidden; border:1px solid rgba(255,255,255,.18); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.28); background:rgba(0,0,0,.24); cursor:zoom-in; }
+.activity-photo img { width:100%; height:100%; display:block; object-fit:contain; object-position:center; }
+.photo-lightbox { position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:48px; background:rgba(0,0,0,.88); cursor:zoom-out; }
+.photo-lightbox.open { display:flex; }
+.photo-lightbox img { max-width:92vw; max-height:86vh; object-fit:contain; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.65); }
+.photo-lightbox button { position:absolute; top:20px; right:28px; border:1px solid rgba(255,255,255,.45); border-radius:50%; width:42px; height:42px; color:#fff; background:rgba(0,0,0,.32); font-size:1.5rem; cursor:pointer; }
+.s-infographic.has-step-gallery { display:grid; grid-template-columns:minmax(250px,300px) minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto; column-gap:28px; row-gap:10px; align-items:stretch; }
+.has-step-gallery .info-header { grid-column:1/-1; margin-bottom:0; }
+.has-step-gallery .step-cards { grid-column:1; grid-row:2; flex:1; flex-direction:column; gap:10px; min-height:0; }
+.has-step-gallery .step-card { min-height:0; padding:10px 14px; display:grid; grid-template-columns:34px 46px minmax(0,1fr); grid-template-rows:1fr 1fr; align-items:center; column-gap:8px; text-align:left; transform:none; cursor:pointer; }
+.has-step-gallery .step-card.active { transform:none; }
+.has-step-gallery .sc-num { grid-row:1/3; }
+.has-step-gallery .sc-icon { grid-row:1/3; width:46px; height:46px; }
+.has-step-gallery .sc-icon svg { width:100%; max-height:46px; }
+.has-step-gallery .sc-label { align-self:end; font-size:.92rem; }
+.has-step-gallery .step-card.active .sc-label { font-size:1rem; }
+.has-step-gallery .sc-note { align-self:start; }
+.has-step-gallery .step-hint { grid-column:1/-1; grid-row:3; margin-top:0; }
+.step-detail { grid-column:2; grid-row:2; min-width:0; min-height:0; display:flex; flex-direction:column; gap:12px; padding:18px; overflow:hidden; border:1px solid rgba(255,255,255,.14); border-radius:22px; background:rgba(255,255,255,.04); box-shadow:0 10px 34px rgba(0,0,0,.18); }
+.step-detail-head { display:flex; align-items:baseline; gap:10px; }
+.step-detail-num { color:#f44336; font-weight:900; font-size:1rem; }
+.step-detail-title { color:#fff; font-size:1.55rem; font-weight:900; }
+.step-detail-photo { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:15px; background:rgba(0,0,0,.25); }
+.step-detail-photo img { width:100%; height:100%; object-fit:contain; cursor:zoom-in; }
+.step-detail-note { color:rgba(255,255,255,.68); font-size:1.05rem; line-height:1.5; text-align:center; }
+
+.note-box { margin-top:14px; width:100%; background:rgba(255,215,0,.08); border:2px solid rgba(255,215,0,.25); border-radius:14px; padding:16px 22px; font-size:1.05rem; line-height:1.7; color:rgba(255,255,255,.85); }
+.note-box strong { color:#ffd700; }
+
+.s-imgfull { flex-direction:column; background:#080108; }
+.imgfull-label { font-size:1rem; color:#f44336; font-weight:700; letter-spacing:.12em; margin-bottom:14px; }
+.imgfull-wrap { flex:1; display:flex; align-items:center; justify-content:center; width:100%; }
+.imgfull-wrap img { max-width:90%; max-height:72vh; border-radius:20px; box-shadow:0 12px 60px rgba(0,0,0,.7); object-fit:contain; }
+.imgfull-caption { margin-top:14px; font-size:1.1rem; color:rgba(255,255,255,.6); text-align:center; }
+
+.s-apply { flex-direction:column; align-items:flex-start; background:#100308; }
+.apply-act-label { font-size:.9rem; color:#ffd700; font-weight:700; letter-spacing:.12em; margin-bottom:10px; }
+.apply-h2 { font-size:2.8rem; font-weight:900; margin-bottom:22px; }
+.apply-box { width:100%; background:rgba(255,215,0,.08); border:2px solid rgba(255,215,0,.3); border-radius:16px; padding:22px 28px; }
+.apply-label { font-size:.85rem; color:#ffd700; font-weight:700; letter-spacing:.1em; margin-bottom:10px; }
+.apply-text { font-size:1.25rem; line-height:1.85; color:rgba(255,255,255,.9); }
+.apply-text strong { color:#ffd700; }
+.q-row { display:flex; gap:14px; width:100%; margin-top:14px; }
+.q-card { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px 18px; }
+.q-type { font-size:.8rem; color:#f44336; font-weight:700; margin-bottom:8px; }
+.q-text { font-size:1.05rem; line-height:1.65; }
+
+.s-finale { flex-direction:column; text-align:center; background:linear-gradient(135deg,#2d0808 0%,#110203 100%); }
+.prayer-box { background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.3); border-radius:24px; padding:30px 40px; max-width:680px; text-align:center; margin-top:22px; }
+.prayer-label { font-size:.9rem; color:#f44336; font-weight:700; letter-spacing:.12em; margin-bottom:14px; }
+.prayer-text { font-size:1.2rem; line-height:2; color:rgba(255,255,255,.9); }
+
+.controls { display:flex; align-items:center; justify-content:center; gap:24px; padding:14px; flex-shrink:0; background:rgba(0,0,0,.4); }
+.btn { padding:13px 40px; border:none; border-radius:30px; font-size:1.05rem; font-weight:700; font-family:inherit; cursor:pointer; transition:all .2s; }
+.btn-prev { background:rgba(255,255,255,.1); color:#fff; }
+.btn-prev:hover { background:rgba(255,255,255,.2); }
+.btn-next { background:#f44336; color:#fff; }
+.btn-next:hover { background:#e53935; transform:scale(1.05); }
+.btn:disabled { opacity:.3; cursor:not-allowed; transform:none !important; }
+.key-hint { font-size:.85rem; color:rgba(255,255,255,.3); }
+.fs-btn { position:fixed; bottom:14px; right:16px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:.85rem; font-family:inherit; }
+.act-jumps { display:flex; gap:7px; }
+.act-jump { background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.2); color:rgba(255,255,255,.65); border-radius:20px; padding:5px 13px; cursor:pointer; font-size:.82rem; font-family:inherit; transition:all .2s; white-space:nowrap; }
+.act-jump:hover { background:rgba(244,67,54,.25); border-color:#f44336; color:#fff; }
+.act-jump.on { background:rgba(244,67,54,.25); border-color:#f44336; color:#fff; font-weight:700; }
+</style>
+<link rel="stylesheet" href="theme-night-garden.css">
+</head>
+<body>
+<div class="journey-mascot" aria-hidden="true"><span>⌣</span></div>
+
+<div class="top-nav">
+  <div class="brand-lockup"><img class="tour-brand-logo" src="img/brand/bible-tour-logo.png" alt="BIBLE TOUR His Story"></div>
+  <a class="nav-home" href="index.html">← 홈</a>
+  <div class="nav-title">🎮 액션투어</div>
+  <div class="act-jumps">
+    <button class="act-jump on" onclick="go(1)" id="aj1">① 기적릴레이</button>
+    <button class="act-jump" onclick="go(5)" id="aj2">② 풍랑돌파</button>
+    <button class="act-jump" onclick="go(7)" id="aj3">③ 바디매오</button>
+    <button class="act-jump" onclick="go(9)" id="aj4">④ 부활기쁨</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="dots-row" id="dots"></div>
+    <div class="slide-ctr" id="ctr">1 / 14</div>
+  </div>
+</div>
+
+<div class="slide-area">
+
+<!-- 0. COVER -->
+<div class="slide s-cover active" data-i="0">
+  <img class="cover-tour-logo" src="img/brand/bible-tour-logo.png" alt="BIBLE TOUR His Story">
+  <div class="badge">🎮 코너활동</div>
+  <div style="font-size:5.5rem; margin-bottom:16px;">🏃</div>
+  <div class="cover-h1">액션 <span>투어</span></div>
+  <div class="cover-sub">예수님의 기적을 몸으로 체험해요!</div>
+  <div class="cover-body">예수님과 함께라면 어떤 문제도 해결할 수 있어요!<br>팀이 하나가 되어 기적을 완성하는 신나는 협동 게임.</div>
+  <div class="chip-row">
+    <div class="chip">🚨 안전 제일!</div>
+    <div class="chip">🤝 팀워크로 완성</div>
+    <div class="chip">⏱️ 호루라기 신호 따라 진행</div>
+    <div class="chip">🎵 배경음악 USB 준비</div>
+  </div>
+</div>
+
+<!-- 1. 게임1 인트로 -->
+<div class="slide s-game-intro" data-i="1">
+  <div class="act-badge"><div class="num">1</div><div class="lbl">첫번째 게임</div></div>
+  <div class="act-h2">최고의 해결사!<br><span>기적의 릴레이</span> 🥄</div>
+  <div class="verse-box">
+    <div class="verse-ref">📖 요한복음 2장 7절</div>
+    <div class="verse-text">예수께서 그들에게 이르시되 항아리에 <strong>물을 채우라</strong> 하신대 그들이 아귀까지 채우니</div>
+  </div>
+  <div class="obj-label">게임 핵심 메시지</div>
+  <div class="obj-text">
+    가나 잔칫집 하인들처럼, 팀이 힘을 모아<br>
+    <strong style="color:#f44336;">숟가락으로 볼풍공(물)을 날라 빈 항아리를 채워요!</strong><br>
+    순종의 발걸음 하나하나가 기적을 만듭니다.
+  </div>
+</div>
+
+<!-- 2. 게임1 준비물 -->
+<div class="slide s-mat" data-i="2">
+  <div class="mat-header">
+    <div class="mat-act-label">첫번째 게임 — 기적의 릴레이</div>
+    <div class="mat-h2">📦 준비물</div>
+  </div>
+  <div class="mat-grid">
+    <div class="mat-card"><div class="m-ico">🥄</div><div class="m-txt">플라스틱 숟가락<br><span style="font-size:.85rem;color:rgba(255,255,255,.5);">인원수+여유분</span></div></div>
+    <div class="mat-card"><div class="m-ico">⚪</div><div class="m-txt">볼풍공<br><span style="font-size:.85rem;color:rgba(255,255,255,.5);">흰색/투명, 다수</span></div></div>
+    <div class="mat-card"><div class="m-ico">🧺</div><div class="m-txt">바구니 1개<br>긴 통 2개<br><span style="font-size:.85rem;color:rgba(255,255,255,.5);">(항아리 역할)</span></div></div>
+    <div class="mat-card"><div class="m-ico">📣</div><div class="m-txt">호루라기</div></div>
+    <div class="mat-card"><div class="m-ico">🚧</div><div class="m-txt">기준선 표지판</div></div>
+    <div class="mat-card"><div class="m-ico">🎵</div><div class="m-txt">배경음악<br><span style="font-size:.85rem;color:rgba(255,255,255,.5);">USB 참조</span></div></div>
+  </div>
+</div>
+
+<!-- 3. 게임1 진행 인포그래픽 -->
+<div class="slide s-infographic has-step-gallery" data-i="3" data-gallery="action-relay">
+  <div class="info-header">
+    <div class="info-act-label">첫번째 게임 — 기적의 릴레이</div>
+    <div class="info-h2">🎮 게임 진행 방법</div>
+  </div>
+  <div class="step-cards">
+    <div class="step-card active">
+      <div class="sc-num">1</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="26" cy="16" r="8" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="19" y="27" width="14" height="18" rx="4" fill="rgba(244,67,54,.35)" stroke="#f44336" stroke-width="1.5"/><circle cx="54" cy="16" r="8" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="47" y="27" width="14" height="18" rx="4" fill="rgba(244,67,54,.35)" stroke="#f44336" stroke-width="1.5"/><line x1="8" y1="47" x2="72" y2="47" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-dasharray="5,3"/><text x="40" y="44" fill="rgba(255,255,255,.5)" font-size="7" text-anchor="middle">출발선</text></svg></div>
+      <div class="sc-label">팀 나누기</div>
+      <div class="sc-note">출발선에<br>줄 서기</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">2</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="28" cy="38" rx="16" ry="9" fill="rgba(200,150,80,.3)" stroke="rgba(200,150,80,.6)" stroke-width="1.5"/><ellipse cx="28" cy="31" rx="16" ry="5" fill="rgba(200,150,80,.4)" stroke="rgba(200,150,80,.7)" stroke-width="1.5"/><circle cx="24" cy="25" r="5" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><circle cx="32" cy="25" r="5" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><line x1="13" y1="12" x2="19" y2="25" stroke="#ccc" stroke-width="2"/><line x1="23" y1="10" x2="24" y2="20" stroke="#ccc" stroke-width="2"/><text x="28" y="44" fill="rgba(200,150,80,.8)" font-size="6" text-anchor="middle">바구니</text><rect x="49" y="20" width="24" height="10" rx="3" fill="rgba(200,150,80,.4)" stroke="rgba(200,150,80,.7)" stroke-width="1.5"/><circle cx="61" cy="14" r="6" fill="rgba(255,255,255,.25)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><text x="61" y="38" fill="rgba(200,150,80,.8)" font-size="6" text-anchor="middle">숟가락</text></svg></div>
+      <div class="sc-label">도구 확인</div>
+      <div class="sc-note">바구니·볼풍공<br>숟가락</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">3</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="35" cy="28" rx="22" ry="20" fill="rgba(244,67,54,.15)" stroke="rgba(244,67,54,.5)" stroke-width="1.5"/><line x1="35" y1="4" x2="35" y2="8" stroke="#f44336" stroke-width="2.5"/><line x1="35" y1="8" x2="35" y2="28" stroke="rgba(244,67,54,.5)" stroke-width="1.5"/><path d="M20,22 Q35,38 50,22" fill="none" stroke="#f44336" stroke-width="2"/><text x="35" y="32" fill="#f44336" font-size="10" text-anchor="middle" font-weight="bold">GO!</text><polygon points="58,22 70,28 58,34" fill="#ffd700" opacity=".8"/></svg></div>
+      <div class="sc-label">출발 신호!</div>
+      <div class="sc-note">호루라기 후<br>숟가락으로 이동</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">4</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="32" r="8" fill="rgba(255,255,255,.25)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><path d="M28,14 Q18,22 22,33" fill="none" stroke="rgba(244,67,54,.7)" stroke-width="2" stroke-dasharray="3,2"/><polygon points="19,32 25,38 26,30" fill="rgba(244,67,54,.7)"/><path d="M52,14 Q62,22 58,33" fill="none" stroke="rgba(76,175,80,.7)" stroke-width="2"/><polygon points="61,32 55,38 54,30" fill="rgba(76,175,80,.7)"/><text x="40" y="20" fill="rgba(244,67,54,.9)" font-size="14" text-anchor="middle">↓</text><text x="40" y="51" fill="rgba(76,175,80,.9)" font-size="7" text-anchor="middle">다시 줍고 계속!</text></svg></div>
+      <div class="sc-label">떨어뜨리면</div>
+      <div class="sc-note">다시 줍고<br>계속!</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">5</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><polygon points="40,5 45,18 60,18 48,27 52,40 40,32 28,40 32,27 20,18 35,18" fill="rgba(255,215,0,.8)" stroke="#ffd700" stroke-width="1.5"/><ellipse cx="40" cy="47" rx="18" ry="6" fill="rgba(255,215,0,.2)" stroke="rgba(255,215,0,.4)" stroke-width="1"/><line x1="40" y1="40" x2="40" y2="44" stroke="#ffd700" stroke-width="2"/></svg></div>
+      <div class="sc-label">더 많이 채운 팀!</div>
+      <div class="sc-note">제한시간 안에<br>승리!</div>
+    </div>
+  </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 안전: 아이들 간 적정 간격 유지 · 손 대지 않고 숟가락만 사용!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+</div>
+
+<!-- 4. 게임1 교육 포인트 -->
+<div class="slide s-apply" data-i="4">
+  <div class="apply-act-label">첫번째 게임 마무리</div>
+  <div class="apply-h2">🎯 교육 포인트 &amp; 마무리</div>
+  <div class="apply-box">
+    <div class="apply-label">💬 마무리 멘트</div>
+    <div class="apply-text">
+      오늘 우리가 체험한 이 게임처럼, 잔칫집의 하인들도<br>
+      예수님 말씀에 따라 항아리에 물을 가득 채웠어요.<br>
+      평범한 물이었지만, <strong>예수님의 말씀에 끝까지 순종했을 때<br>
+      세상에서 가장 맛있는 포도주로 변하는 기적이 일어났어요!</strong><br><br>
+      막막하고 어려운 문제가 생길 때, 최고의 해결사이신<br>
+      예수님께 나아가세요. 마음을 모아 순종할 때, 기적이 일어납니다!
+    </div>
+  </div>
+  <div class="q-row">
+    <div class="q-card"><div class="q-type">🔍 나눔 질문</div><div class="q-text">"오늘 게임에서 가장 힘들었던 순간은? 그때 어떻게 했나요?"</div></div>
+    <div class="q-card"><div class="q-type">❤️ 적용 질문</div><div class="q-text">"예수님께 맡기고 싶은 나의 '항아리 빈 곳'은 무엇인가요?"</div></div>
+  </div>
+</div>
+
+<!-- 5. 게임2 인트로 -->
+<div class="slide s-game-intro" data-i="5">
+  <div class="act-badge"><div class="num">2</div><div class="lbl">두번째 게임</div></div>
+  <div class="act-h2">풍랑을 뚫고<br><span>전진하라!</span> 🌊</div>
+  <div class="verse-box">
+    <div class="verse-ref">📖 마태복음 8장 26절</div>
+    <div class="verse-text"><strong>"잠잠하라 고요하라"</strong> — 예수께서 바람과 바다를 꾸짖으시니 아주 잔잔하게 되거늘</div>
+  </div>
+  <div class="obj-label">게임 핵심 메시지</div>
+  <div class="obj-text">
+    예수님과 함께라면 큰 풍랑도 이겨낼 수 있어요!<br>
+    발판(원형 박스 조각)을 이어가며 <strong style="color:#f44336;">팀이 함께 목적지까지</strong> 건너가는 협동 게임.
+  </div>
+</div>
+
+<!-- 6. 게임2 진행 -->
+<div class="slide s-infographic has-step-gallery" data-i="6" data-gallery="action-storm">
+  <div class="info-header">
+    <div class="info-act-label">두번째 게임 — 풍랑을 뚫고 전진</div>
+    <div class="info-h2">🎮 게임 진행 방법</div>
+  </div>
+  <div class="step-cards">
+    <div class="step-card active">
+      <div class="sc-num">1</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="44" x2="70" y2="44" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-dasharray="5,3"/><line x1="10" y1="10" x2="70" y2="10" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-dasharray="5,3"/><text x="8" y="9" fill="rgba(255,255,255,.5)" font-size="7">출발</text><text x="58" y="9" fill="rgba(255,255,255,.5)" font-size="7">도착</text><circle cx="22" cy="28" r="7" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="16" y="37" width="12" height="13" rx="3" fill="rgba(244,67,54,.3)" stroke="#f44336" stroke-width="1.5"/><circle cx="40" cy="28" r="7" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="34" y="37" width="12" height="13" rx="3" fill="rgba(244,67,54,.3)" stroke="#f44336" stroke-width="1.5"/><rect x="57" y="18" width="14" height="36" rx="3" fill="rgba(255,152,0,.4)" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/></svg></div>
+      <div class="sc-label">준비</div>
+      <div class="sc-note">출발·도착선 설정<br>팀 나누기</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">2</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="14" r="8" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="16" y="24" width="12" height="16" rx="3" fill="rgba(244,67,54,.35)" stroke="#f44336" stroke-width="1.5"/><rect x="12" y="38" width="8" height="12" rx="2" fill="rgba(244,67,54,.3)" stroke="#f44336" stroke-width="1"/><rect x="26" y="38" width="8" height="12" rx="2" fill="rgba(244,67,54,.3)" stroke="#f44336" stroke-width="1"/><rect x="32" y="22" width="18" height="12" rx="3" fill="rgba(255,152,0,.5)" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/><rect x="55" y="28" width="18" height="12" rx="3" fill="rgba(255,152,0,.4)" stroke="rgba(255,152,0,.7)" stroke-width="1.5"/><line x1="50" y1="28" x2="55" y2="34" stroke="rgba(244,67,54,.6)" stroke-width="2" stroke-dasharray="2,2"/></svg></div>
+      <div class="sc-label">개인전</div>
+      <div class="sc-note">발판 1개씩<br>직접 이어가기</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">3</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="12" r="7" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><circle cx="40" cy="12" r="7" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><circle cx="58" cy="12" r="7" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="12" y="22" width="56" height="18" rx="4" fill="rgba(255,152,0,.4)" stroke="rgba(255,152,0,.8)" stroke-width="2"/><text x="40" y="35" fill="rgba(255,152,0,.9)" font-size="8" text-anchor="middle" font-weight="bold">공유 발판</text><line x1="16" y1="40" x2="16" y2="50" stroke="rgba(244,67,54,.5)" stroke-width="2"/><line x1="40" y1="40" x2="40" y2="50" stroke="rgba(244,67,54,.5)" stroke-width="2"/><line x1="64" y1="40" x2="64" y2="50" stroke="rgba(244,67,54,.5)" stroke-width="2"/></svg></div>
+      <div class="sc-label">팀전</div>
+      <div class="sc-note">큰 발판 공유<br>팀원 모두 함께!</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">4</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="18" width="36" height="28" rx="4" fill="rgba(255,152,0,.3)" stroke="rgba(255,152,0,.8)" stroke-width="2"/><text x="40" y="38" fill="rgba(255,152,0,.9)" font-size="20" text-anchor="middle" font-weight="bold">!</text><text x="40" y="14" fill="rgba(255,152,0,.8)" font-size="10" text-anchor="middle">⚠</text><circle cx="22" cy="14" r="6" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><line x1="26" y1="47" x2="6" y2="55" stroke="rgba(244,67,54,.6)" stroke-width="1.5" stroke-dasharray="3,2"/><text x="6" y="50" fill="rgba(255,255,255,.5)" font-size="6">OUT!</text></svg></div>
+      <div class="sc-label">규칙</div>
+      <div class="sc-note">발판 밖 밟으면<br>출발 다시!</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">5</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><polygon points="40,5 45,18 60,18 48,27 52,40 40,32 28,40 32,27 20,18 35,18" fill="rgba(255,215,0,.8)" stroke="#ffd700" stroke-width="1.5"/><ellipse cx="40" cy="47" rx="18" ry="6" fill="rgba(255,215,0,.2)" stroke="rgba(255,215,0,.4)" stroke-width="1"/><line x1="40" y1="40" x2="40" y2="44" stroke="#ffd700" stroke-width="2"/></svg></div>
+      <div class="sc-label">전원 먼저 도착!</div>
+      <div class="sc-note">팀 전원 도착<br>먼저 한 팀 승리</div>
+    </div>
+  </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 발판 = 예수님과 함께하는 한 걸음 · 풍랑(바닥) = 두려움과 문제</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+</div>
+
+<!-- 7. 게임3 인트로 -->
+<div class="slide s-game-intro" data-i="7">
+  <div class="act-badge"><div class="num">3</div><div class="lbl">세번째 게임</div></div>
+  <div class="act-h2">바디매오의<br><span>간절한 외침!</span> 🙏</div>
+  <div class="verse-box">
+    <div class="verse-ref">📖 누가복음 18장 38절</div>
+    <div class="verse-text">그가 외쳐 이르되 <strong>"다윗의 자손 예수여 나를 불쌍히 여기소서!"</strong></div>
+  </div>
+  <div class="obj-label">게임 핵심 메시지</div>
+  <div class="obj-text">
+    앞을 못 보는 절망 속에서도 예수님만을 향해 외쳤던 바디매오처럼,<br>
+    <strong style="color:#f44336;">안대를 쓰고 팀원 목소리만 믿고 바구니에 볼풍공을 던지는</strong> 팀 대항 게임!
+  </div>
+</div>
+
+<!-- 8. 게임3 진행 -->
+<div class="slide s-infographic has-step-gallery" data-i="8" data-gallery="action-bartimaeus">
+  <div class="info-header">
+    <div class="info-act-label">세번째 게임 — 바디매오의 간절한 외침</div>
+    <div class="info-h2">🎮 게임 진행 방법</div>
+  </div>
+  <div class="step-cards">
+    <div class="step-card active">
+      <div class="sc-num">1</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="22" r="14" fill="rgba(244,67,54,.2)" stroke="rgba(244,67,54,.5)" stroke-width="1.5"/><rect x="26" y="18" width="28" height="8" rx="4" fill="rgba(244,67,54,.6)" stroke="#f44336" stroke-width="1.5"/><rect x="23" y="17" width="5" height="10" rx="2" fill="rgba(180,50,30,.7)"/><rect x="52" y="17" width="5" height="10" rx="2" fill="rgba(180,50,30,.7)"/><path d="M28,28 Q40,35 52,28" fill="none" stroke="rgba(244,67,54,.5)" stroke-width="1.5"/><text x="40" y="47" fill="rgba(255,255,255,.5)" font-size="7" text-anchor="middle">실명 체험</text></svg></div>
+      <div class="sc-label">안대 착용</div>
+      <div class="sc-note">던지는 사람<br>실명 체험</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">2</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="52" cy="22" rx="20" ry="14" fill="rgba(244,67,54,.15)" stroke="rgba(244,67,54,.5)" stroke-width="1.5"/><path d="M36,16 Q52,10 68,16 L68,28 Q52,34 36,28 Z" fill="rgba(244,67,54,.2)" stroke="rgba(244,67,54,.6)" stroke-width="1.5"/><text x="52" y="26" fill="#f44336" font-size="9" text-anchor="middle" font-weight="bold">이쪽!</text><circle cx="18" cy="22" r="10" fill="rgba(244,67,54,.2)" stroke="rgba(244,67,54,.4)" stroke-width="1.5"/><rect x="12" y="16" width="12" height="12" rx="3" fill="rgba(244,67,54,.4)"/><line x1="28" y1="22" x2="34" y2="22" stroke="rgba(244,67,54,.6)" stroke-width="1.5"/><polygon points="32,19 36,22 32,25" fill="rgba(244,67,54,.6)"/></svg></div>
+      <div class="sc-label">방향 안내</div>
+      <div class="sc-note">팀원들이<br>"이쪽이에요!" 외침</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">3</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="28" r="10" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.6)" stroke-width="2"/><rect x="18" y="22" width="8" height="8" rx="2" fill="rgba(244,67,54,.6)"/><line x1="32" y1="22" x2="50" y2="22" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-dasharray="3,2"/><polygon points="48,18 58,22 48,26" fill="rgba(255,255,255,.6)"/><ellipse cx="62" cy="37" rx="12" ry="10" fill="rgba(200,150,80,.3)" stroke="rgba(200,150,80,.6)" stroke-width="1.5"/><ellipse cx="62" cy="32" rx="12" ry="5" fill="rgba(200,150,80,.4)" stroke="rgba(200,150,80,.7)" stroke-width="1.5"/></svg></div>
+      <div class="sc-label">볼풍공 던지기!</div>
+      <div class="sc-note">소리만 믿고<br>던지기!</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">4</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><polygon points="40,5 45,18 60,18 48,27 52,40 40,32 28,40 32,27 20,18 35,18" fill="rgba(255,215,0,.8)" stroke="#ffd700" stroke-width="1.5"/><ellipse cx="40" cy="47" rx="18" ry="6" fill="rgba(255,215,0,.2)" stroke="rgba(255,215,0,.4)" stroke-width="1"/><line x1="40" y1="40" x2="40" y2="44" stroke="#ffd700" stroke-width="2"/></svg></div>
+      <div class="sc-label">더 많이 넣은 팀!</div>
+      <div class="sc-note">시간 내<br>승리!</div>
+    </div>
+  </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 안대=실명 · 볼풍공=외침 · 바구니=예수님 &nbsp; 안대 착용 시 보조 교사 옆 배치!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+</div>
+
+<!-- 9. 게임4 인트로 -->
+<div class="slide s-game-intro" data-i="9">
+  <div class="act-badge"><div class="num">4</div><div class="lbl">네번째 게임</div></div>
+  <div class="act-h2">점점 커지는<br><span>부활의 기쁨!</span> 🎈</div>
+  <div class="verse-box">
+    <div class="verse-ref">📖 누가복음 24장 9절</div>
+    <div class="verse-text">무덤에서 돌아가 이 모든 것을 열한 사도와 <strong>다른 모든 이에게 알리니</strong></div>
+  </div>
+  <div class="obj-label">게임 핵심 메시지</div>
+  <div class="obj-text">
+    부활 소식을 들은 여인들이 달려가 기쁨을 전했던 것처럼,<br>
+    팀원이 한 명씩 <strong style="color:#f44336;">풍선(부활의 기쁨)을 더해가며</strong> 온 세상에 전하는 릴레이!
+  </div>
+</div>
+
+<!-- 10. 게임4 진행 -->
+<div class="slide s-infographic has-step-gallery" data-i="10" data-gallery="action-resurrection">
+  <div class="info-header">
+    <div class="info-act-label">네번째 게임 — 점점 커지는 부활의 기쁨</div>
+    <div class="info-h2">🎮 게임 진행 방법</div>
+  </div>
+  <div class="step-cards">
+    <div class="step-card active">
+      <div class="sc-num">1</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="37" rx="14" ry="9" fill="rgba(200,150,80,.3)" stroke="rgba(200,150,80,.6)" stroke-width="1.5"/><ellipse cx="22" cy="30" rx="14" ry="5" fill="rgba(200,150,80,.4)" stroke="rgba(200,150,80,.7)" stroke-width="1.5"/><ellipse cx="36" cy="20" rx="10" ry="13" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><line x1="36" y1="33" x2="36" y2="37" stroke="#f44336" stroke-width="1.5"/><ellipse cx="55" cy="22" rx="9" ry="11" fill="rgba(255,152,0,.5)" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/><line x1="55" y1="33" x2="55" y2="37" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/><ellipse cx="70" cy="24" rx="8" ry="10" fill="rgba(76,175,80,.5)" stroke="#4CAF50" stroke-width="1.5"/><line x1="70" y1="34" x2="70" y2="37" stroke="#4CAF50" stroke-width="1.5"/></svg></div>
+      <div class="sc-label">풍선 준비</div>
+      <div class="sc-note">출발선 바구니에<br>풍선 가득</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">2</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><circle cx="35" cy="20" r="8" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><rect x="29" y="30" width="12" height="16" rx="3" fill="rgba(244,67,54,.35)" stroke="#f44336" stroke-width="1.5"/><ellipse cx="55" cy="15" rx="9" ry="11" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><line x1="55" y1="26" x2="55" y2="36" stroke="#f44336" stroke-width="1.5"/><text x="55" y="12" fill="white" font-size="10" text-anchor="middle" font-weight="bold">1</text><line x1="37" y1="46" x2="65" y2="46" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-dasharray="4,3"/><polygon points="48,36 55,28 62,36" fill="rgba(244,67,54,.4)" stroke="rgba(244,67,54,.6)" stroke-width="1"/></svg></div>
+      <div class="sc-label">1번 주자</div>
+      <div class="sc-note">풍선 1개<br>들고 달리기</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">3</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="26" rx="8" ry="10" fill="rgba(244,67,54,.5)" stroke="#f44336" stroke-width="1.5"/><line x1="20" y1="36" x2="20" y2="42" stroke="#f44336" stroke-width="1.5"/><ellipse cx="36" cy="22" rx="8" ry="10" fill="rgba(255,152,0,.5)" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/><line x1="36" y1="32" x2="36" y2="42" stroke="rgba(255,152,0,.8)" stroke-width="1.5"/><ellipse cx="52" cy="18" rx="8" ry="10" fill="rgba(76,175,80,.5)" stroke="#4CAF50" stroke-width="1.5"/><line x1="52" y1="28" x2="52" y2="42" stroke="#4CAF50" stroke-width="1.5"/><text x="65" y="22" fill="rgba(255,215,0,.9)" font-size="14" text-anchor="middle" font-weight="bold">+1</text><text x="40" y="52" fill="rgba(255,255,255,.5)" font-size="7" text-anchor="middle">주자마다 +1</text></svg></div>
+      <div class="sc-label">점점 늘어나요!</div>
+      <div class="sc-note">2개, 3개…<br>주자마다 +1</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">4</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="22" rx="10" ry="12" fill="rgba(244,67,54,.4)" stroke="#f44336" stroke-width="1.5"/><line x1="40" y1="34" x2="40" y2="38" stroke="#f44336" stroke-width="1.5"/><line x1="28" y1="38" x2="52" y2="38" stroke="rgba(255,255,255,.3)" stroke-width="1" stroke-dasharray="3,2"/><line x1="32" y1="14" x2="48" y2="30" stroke="rgba(255,50,50,.7)" stroke-width="2.5"/><line x1="48" y1="14" x2="32" y2="30" stroke="rgba(255,50,50,.7)" stroke-width="2.5"/><path d="M20,48 Q40,38 60,48" fill="none" stroke="#4CAF50" stroke-width="2"/><polygon points="57,44 62,52 64,44" fill="#4CAF50"/><text x="40" y="53" fill="rgba(76,175,80,.8)" font-size="6" text-anchor="middle">다시 담고 계속!</text></svg></div>
+      <div class="sc-label">떨어지면</div>
+      <div class="sc-note">다시 담아서<br>계속!</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-num">5</div>
+      <div class="sc-icon"><svg viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><polygon points="40,5 45,18 60,18 48,27 52,40 40,32 28,40 32,27 20,18 35,18" fill="rgba(255,215,0,.8)" stroke="#ffd700" stroke-width="1.5"/><ellipse cx="40" cy="47" rx="18" ry="6" fill="rgba(255,215,0,.2)" stroke="rgba(255,215,0,.4)" stroke-width="1"/><line x1="40" y1="40" x2="40" y2="44" stroke="#ffd700" stroke-width="2"/></svg></div>
+      <div class="sc-label">더 많은 풍선!</div>
+      <div class="sc-note">시간 내<br>더 많이 모은 팀</div>
+    </div>
+  </div>
+  <div class="step-hint">→ 키로 다음 단계 &nbsp;|&nbsp; 풍선 = 부활의 기쁨 · 나눌수록 커집니다!</div>
+  <div class="step-detail"><div class="step-detail-head"><span class="step-detail-num">01</span><span class="step-detail-title"></span></div><div class="step-detail-photo"><img class="step-detail-img" alt=""></div><div class="step-detail-note"></div></div>
+</div>
+
+<!-- 11. 주의사항 총정리 -->
+<div class="slide s-mat" data-i="11">
+  <div class="mat-header">
+    <div class="mat-act-label">액션투어 전체 공통</div>
+    <div class="mat-h2">⚠️ 안전 &amp; 진행 가이드</div>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; width:100%;">
+    <div style="background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.3); border-radius:18px; padding:22px 24px;">
+      <div style="color:#f44336; font-size:1rem; font-weight:700; margin-bottom:14px;">🚨 안전 수칙</div>
+      <div style="font-size:1.1rem; line-height:2;">
+        ① 아이들 간 적정 간격 유지<br>
+        ② 발판 위에서 뛰지 않기<br>
+        ③ 안대 착용 시 옆에 보조 교사 배치<br>
+        ④ 풍선 알레르기 사전 확인
+      </div>
+    </div>
+    <div style="background:rgba(255,152,0,.1); border:2px solid rgba(255,152,0,.3); border-radius:18px; padding:22px 24px;">
+      <div style="color:#ffb74d; font-size:1rem; font-weight:700; margin-bottom:14px;">🎯 진행 팁</div>
+      <div style="font-size:1.1rem; line-height:2;">
+        ① 게임 전 규칙을 명확히 설명<br>
+        ② 배경음악으로 분위기 조성<br>
+        ③ 속도보다 팀워크 강조<br>
+        ④ 승패보다 참여 과정에 집중
+      </div>
+    </div>
+    <div style="background:rgba(76,175,80,.1); border:2px solid rgba(76,175,80,.3); border-radius:18px; padding:22px 24px; grid-column:span 2;">
+      <div style="color:#4CAF50; font-size:1rem; font-weight:700; margin-bottom:10px;">💬 게임 후 공통 마무리 멘트</div>
+      <div style="font-size:1.15rem; line-height:1.8; color:rgba(255,255,255,.9);">"오늘 게임을 통해 예수님이 우리 삶의 <strong style="color:#4CAF50;">최고의 해결사</strong>이심을 느꼈나요?<br>어떤 문제 앞에서도 <strong style="color:#4CAF50;">예수님께 먼저 나아가는</strong> 친구들이 됩시다!"</div>
+    </div>
+  </div>
+</div>
+
+<!-- 12. 교육 효과 -->
+<div class="slide s-apply" data-i="12">
+  <div class="apply-act-label">액션투어 — 교육 &amp; 기대효과</div>
+  <div class="apply-h2">📚 교육 &amp; 기대효과</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%;">
+    <div style="background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.25); border-radius:16px; padding:20px 22px;">
+      <div style="color:#f44336; font-size:1rem; font-weight:700; margin-bottom:12px;">1️⃣ 순종의 가치 학습</div>
+      <div style="font-size:1.05rem; line-height:1.7;">말씀에 끝까지 반응한 하인들의 믿음을 체험합니다.</div>
+    </div>
+    <div style="background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.25); border-radius:16px; padding:20px 22px;">
+      <div style="color:#f44336; font-size:1rem; font-weight:700; margin-bottom:12px;">2️⃣ 공동체 의식</div>
+      <div style="font-size:1.05rem; line-height:1.7;">함께 협동하여 기적을 완성하는 기쁨을 누립니다.</div>
+    </div>
+    <div style="background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.25); border-radius:16px; padding:20px 22px;">
+      <div style="color:#f44336; font-size:1rem; font-weight:700; margin-bottom:12px;">3️⃣ 예수님 신뢰</div>
+      <div style="font-size:1.05rem; line-height:1.7;">우리 삶의 결핍을 채워 주시는 예수님을 신뢰하게 됩니다.</div>
+    </div>
+    <div style="background:rgba(244,67,54,.1); border:2px solid rgba(244,67,54,.25); border-radius:16px; padding:20px 22px;">
+      <div style="color:#f44336; font-size:1rem; font-weight:700; margin-bottom:12px;">4️⃣ 간절한 기도</div>
+      <div style="font-size:1.05rem; line-height:1.7;">어떤 상황에서도 예수님께 부르짖는 믿음을 키웁니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. 마무리 -->
+<div class="slide s-finale" data-i="13">
+  <div style="font-size:5rem; margin-bottom:16px;">🏆</div>
+  <div class="cover-h1" style="font-size:3.5rem;">액션투어 <span>완료!</span></div>
+  <div class="cover-sub" style="margin-top:12px;">온몸으로 기적을 체험했나요? 예수님이 함께하시면 다 됩니다!</div>
+  <div class="prayer-box">
+    <div class="prayer-label">🙏 마침 기도</div>
+    <div class="prayer-text">
+      "사랑의 예수님, 오늘 게임처럼<br>
+      마음을 모아 순종할 때 <strong style="color:#f44336;">기적이 일어남</strong>을 배웠어요.<br><br>
+      우리의 슬픔을 기쁨으로, 평범한 일상을 기적으로<br>
+      바꾸어 주시는 예수님을 믿고 의지하게 해주세요.<br>
+      예수님의 이름으로 기도합니다. <strong style="color:#f44336;">아멘.</strong>"
+    </div>
+  </div>
+  <div style="margin-top:24px;"><a href="index.html" style="color:rgba(255,255,255,.4); text-decoration:none; font-size:1rem;">← 홈으로</a></div>
+</div>
+
+</div>
+
+<div class="controls">
+  <button class="btn btn-prev" id="btnP" onclick="go(cur-1)">← 이전</button>
+  <span class="key-hint">← → 키보드 이동</span>
+  <button class="btn btn-next" id="btnN" onclick="go(cur+1)">다음 →</button>
+</div>
+<button class="fs-btn" onclick="toggleFS()">⛶ 전체화면</button>
+
+<script>
+const TOTAL=14,slides=[...document.querySelectorAll('.slide')];
+const dotsEl=document.getElementById('dots'),ctrEl=document.getElementById('ctr');
+const btnP=document.getElementById('btnP'),btnN=document.getElementById('btnN');
+let cur=0, subStep=0;
+for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>go(i);dotsEl.appendChild(d);}
+function go(n){
+  if(n<0)return;
+  if(n>=TOTAL){location.href='food-tour.html';return;}
+  const sl=slides[cur];
+  const steps=sl.querySelectorAll('.step-card').length;
+  if(steps>0){
+    if(n>cur&&subStep<steps-1){subStep++;updateCards(sl,subStep);return;}
+    if(n<cur&&subStep>0){subStep--;updateCards(sl,subStep);return;}
+  }
+  slides[cur].classList.remove('active');slides[cur].classList.add('prev');
+  setTimeout(()=>slides[cur].classList.remove('prev'),400);
+  cur=n;subStep=0;slides[cur].classList.add('active');
+  const newSl=slides[cur];
+  if(newSl.querySelectorAll('.step-card').length>0)updateCards(newSl,0);
+  upd();
+}
+function updateCards(sl,s){
+  [...sl.querySelectorAll('.step-card')].forEach((c,i)=>{
+    c.className='step-card'+(i===s?' active':i<s?' done':'');
+  });
+  updateDetail(sl,s);
+}
+function updateDetail(sl,s){
+  const detail=sl.querySelector('.step-detail');if(!detail)return;
+  const card=sl.querySelectorAll('.step-card')[s];if(!card)return;
+  const title=card.querySelector('.sc-label')?.innerText||'';
+  const note=card.querySelector('.sc-note')?.innerText.replace(/\n/g,' ')||'';
+  const count=sl.querySelectorAll('.step-card').length;
+  let progress=detail.querySelector('.step-progress');
+  if(!progress){ progress=document.createElement('div'); progress.className='step-progress'; detail.querySelector('.step-detail-head').insertAdjacentElement('afterend',progress); }
+  progress.innerHTML=[...Array(count)].map((_,i)=>`<span class="step-progress-dot ${i===s?'active':i<s?'done':''}"></span>`).join('');
+  detail.querySelector('.step-detail-num').textContent=String(s+1).padStart(2,'0');
+  detail.querySelector('.step-detail-title').textContent=title;
+  detail.querySelector('.step-detail-note').textContent=note;
+  const img=detail.querySelector('.step-detail-img');img.src=`img/activity/steps/${sl.dataset.gallery}-${s+1}.png`;img.alt=`${title} 활동 사진`;
+}
+function upd(){
+  ctrEl.textContent=(cur+1)+' / '+TOTAL;btnP.disabled=cur===0;btnN.disabled=false;
+  [...document.querySelectorAll('.dot')].forEach((d,i)=>d.className='dot'+(i===cur?' active':i<cur?' done':''));
+  const a=cur>=9?'aj4':cur>=7?'aj3':cur>=5?'aj2':'aj1';
+  ['aj1','aj2','aj3','aj4'].forEach(id=>{const b=document.getElementById(id);if(b)b.className='act-jump'+(id===a?' on':'');});
+  updateDetail(slides[cur],subStep);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='1')go(1); if(e.key==='2')go(5); if(e.key==='3')go(7); if(e.key==='4')go(9);
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);});
+document.addEventListener('click',e=>{const card=e.target.closest('.has-step-gallery .step-card');if(!card)return;const sl=card.closest('.slide');if(sl!==slides[cur])return;subStep=[...sl.querySelectorAll('.step-card')].indexOf(card);updateCards(sl,subStep);});
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+const lightbox=document.createElement('div');lightbox.className='photo-lightbox';lightbox.innerHTML='<button type="button" aria-label="사진 닫기">×</button><img alt="확대된 활동 사진">';document.body.appendChild(lightbox);
+const lightboxImg=lightbox.querySelector('img');
+document.addEventListener('click',e=>{const img=e.target.closest('.activity-photo img, .step-detail-photo img');if(img){lightboxImg.src=img.src;lightboxImg.alt=img.alt;lightbox.classList.add('open');}else if(e.target===lightbox||e.target.closest('.photo-lightbox button'))lightbox.classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')lightbox.classList.remove('open');});
+upd();
+</script>
+</body>
+</html>

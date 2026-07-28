@@ -632,6 +632,8 @@ function updateCards(sl,s){
   [...sl.querySelectorAll('.step-card')].forEach((c,i)=>{
     c.className='step-card'+(i===s?' active':i<s?' done':'');
   });
+  const activeCard=sl.querySelector('.step-card.active');
+  if(activeCard)activeCard.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   updateDetail(sl,s);
 }
 function updateDetail(sl,s){

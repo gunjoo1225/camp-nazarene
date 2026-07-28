@@ -318,6 +318,47 @@
   .act-jump { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.65); border-radius: 20px; padding: 5px 16px; cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: all 0.2s; white-space: nowrap; }
   .act-jump:hover { background: rgba(255,152,0,0.25); border-color: #FF9800; color: #fff; }
   .act-jump.on { background: rgba(255,152,0,0.25); border-color: #FF9800; color: #fff; font-weight: 700; }
+  @media (max-width: 768px) {
+    .top-nav { padding:8px 12px; gap:6px; flex-wrap:wrap; }
+    .brand-lockup { display:none; }
+    .nav-title { font-size:.95rem; }
+    .act-jumps { gap:4px; order:10; width:100%; justify-content:center; }
+    .act-jump { padding:4px 10px; font-size:.72rem; }
+    .progress-wrap, .progress-dots, .slide-counter { display:none !important; }
+    .cover-main { font-size:3rem; }
+    .cover-sub { font-size:1.2rem; }
+    .cover-verse { font-size:1rem; padding:14px 20px; }
+    .cover-badge { font-size:.85rem; padding:6px 18px; }
+    .cover-keys { display:none; }
+    .act-title { font-size:2rem; }
+    .act-number { font-size:.85rem; }
+    .act-verse { font-size:1rem; padding:14px 18px; }
+    .act-message { font-size:1rem; }
+    .s-intro { padding:20px 22px !important; }
+    .s-mat { padding:20px 22px !important; }
+    .s-cover { padding:24px 20px !important; }
+    .section-title { font-size:1.8rem; margin-bottom:20px; }
+    .mat-grid { grid-template-columns:1fr 1fr !important; gap:12px; }
+    .mat-grid.col5 { grid-template-columns:repeat(3,1fr) !important; }
+    .mat-item { padding:16px 10px; }
+    .mat-item .mat-icon { font-size:2.2rem; margin-bottom:8px; }
+    .s-infographic.has-step-gallery { grid-template-columns:1fr !important; grid-template-rows:auto auto auto 1fr auto !important; padding:14px 16px !important; }
+    .has-step-gallery .step-cards { grid-column:1 !important; grid-row:3 !important; flex-direction:row !important; overflow-x:auto; gap:8px; max-height:110px; padding-bottom:4px; min-height:0; }
+    .has-step-gallery .step-card { min-width:88px; max-width:88px; display:flex !important; flex-direction:column !important; align-items:center; text-align:center; padding:8px 6px; }
+    .has-step-gallery .sc-num { grid-row:unset; }
+    .has-step-gallery .sc-icon { grid-row:unset; width:34px; height:34px; }
+    .has-step-gallery .sc-icon svg { max-height:34px; }
+    .has-step-gallery .sc-label { font-size:.76rem; }
+    .has-step-gallery .sc-note { display:none; }
+    .has-step-gallery .step-detail { grid-column:1 !important; grid-row:4 !important; }
+    .has-step-gallery .step-hint { grid-column:1 !important; grid-row:5 !important; }
+    .step-detail-title { font-size:1.2rem; }
+    .step-detail-note { font-size:.95rem; }
+    .controls { padding:8px 14px; gap:10px; }
+    .btn { padding:9px 20px; font-size:.9rem; }
+    .key-hint, .fullscreen-btn, .journey-mascot { display:none !important; }
+    .nav-btn { width:36px; font-size:1.5rem; }
+  }
 </style>
 <link rel="stylesheet" href="theme-night-garden.css">
 </head>
@@ -1198,6 +1239,9 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
 
 updateUI();
+let _tx=0;
+document.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_tx;if(Math.abs(dx)>50){go(dx<0?1:-1);}});
 </script>
 </body>
 </html>

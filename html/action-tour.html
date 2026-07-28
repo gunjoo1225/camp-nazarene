@@ -153,6 +153,40 @@ body { font-family:'Malgun Gothic','맑은 고딕',sans-serif; background:#12050
 .act-jump { background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.2); color:rgba(255,255,255,.65); border-radius:20px; padding:5px 13px; cursor:pointer; font-size:.82rem; font-family:inherit; transition:all .2s; white-space:nowrap; }
 .act-jump:hover { background:rgba(244,67,54,.25); border-color:#f44336; color:#fff; }
 .act-jump.on { background:rgba(244,67,54,.25); border-color:#f44336; color:#fff; font-weight:700; }
+@media (max-width: 768px) {
+  .top-nav { padding:8px 12px; gap:6px; flex-wrap:wrap; }
+  .brand-lockup { display:none; }
+  .nav-title { font-size:.95rem; }
+  .act-jumps { gap:4px; order:10; width:100%; justify-content:center; }
+  .act-jump { padding:4px 9px; font-size:.7rem; }
+  .progress-wrap { display:none !important; }
+  .slide { padding:16px 18px; }
+  .cover-h1 { font-size:2.8rem; }
+  .cover-sub { font-size:1rem; }
+  .cover-body { font-size:.95rem; }
+  .act-h2 { font-size:2rem; }
+  .mat-h2 { font-size:1.8rem; }
+  .mat-grid { grid-template-columns:1fr 1fr; }
+  .mat-card.wide { grid-column:span 2; }
+  .info-h2, .apply-h2 { font-size:1.8rem; }
+  .s-infographic.has-step-gallery { grid-template-columns:1fr !important; grid-template-rows:auto auto 1fr auto !important; padding:14px 16px !important; }
+  .has-step-gallery .step-cards { grid-column:1 !important; grid-row:2 !important; flex-direction:row !important; overflow-x:auto; gap:8px; max-height:110px; padding-bottom:4px; min-height:0; }
+  .has-step-gallery .step-card { min-width:88px; max-width:88px; display:flex !important; flex-direction:column !important; align-items:center; text-align:center; padding:8px 6px; }
+  .has-step-gallery .sc-num { grid-row:unset; }
+  .has-step-gallery .sc-icon { grid-row:unset; width:34px; height:34px; }
+  .has-step-gallery .sc-icon svg { max-height:34px; }
+  .has-step-gallery .sc-label { font-size:.76rem; }
+  .has-step-gallery .sc-note { display:none; }
+  .has-step-gallery .step-detail { grid-column:1 !important; grid-row:3 !important; }
+  .has-step-gallery .step-hint { grid-column:1 !important; grid-row:4 !important; }
+  .step-detail-title { font-size:1.2rem; }
+  .step-detail-note { font-size:.95rem; }
+  .q-row { flex-direction:column; }
+  .controls { padding:8px 14px; gap:10px; }
+  .btn { padding:9px 20px; font-size:.9rem; }
+  .key-hint, .fs-btn, .journey-mascot { display:none !important; }
+  .prayer-box { padding:20px 22px; }
+}
 </style>
 <link rel="stylesheet" href="theme-night-garden.css">
 </head>
@@ -595,6 +629,9 @@ const lightboxImg=lightbox.querySelector('img');
 document.addEventListener('click',e=>{const img=e.target.closest('.activity-photo img, .step-detail-photo img');if(img){lightboxImg.src=img.src;lightboxImg.alt=img.alt;lightbox.classList.add('open');}else if(e.target===lightbox||e.target.closest('.photo-lightbox button'))lightbox.classList.remove('open');});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')lightbox.classList.remove('open');});
 upd();
+let _tx=0;
+document.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_tx;if(Math.abs(dx)>50){go(dx<0?cur+1:cur-1);}});
 </script>
 </body>
 </html>
